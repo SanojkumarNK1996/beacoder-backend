@@ -8,4 +8,13 @@ router.get("/", (req, res) => {
     }
 })
 
+router.get("/profile", async (req, res) => {
+    try {
+        const { name } = "user"
+        return res.status(200).json({ msg: "user fetched succesfully", userName: name })
+    } catch (error) {
+        return res.status(500).json({ error: error.message })
+    }
+})
+
 module.exports = router

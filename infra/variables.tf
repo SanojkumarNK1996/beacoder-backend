@@ -4,6 +4,11 @@ variable "aws_region" {
   default     = "ap-south-1"
 }
 
+variable "apg_stage_name" {
+  description = "The stage of apigateway"
+  type        = string
+}
+
 variable "github_repo" {
   description = "The URL of the public GitHub repository containing the React app source code."
   type        = string
@@ -12,5 +17,4 @@ variable "github_repo" {
 variable "environment" {
   description = "Deployment environment identifier (e.g., dev, staging, prod)."
   type        = string
-  default     = "dev"
 }

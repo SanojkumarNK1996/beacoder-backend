@@ -32,7 +32,7 @@ resource "aws_instance" "app" {
     
     echo "=== User Data Script Started at $(date) ==="
     
-    echo "Step 1: Updating system... <-->"
+    echo "Step 1: Updating system... (NEW) <-->"
     dnf update -y
     
     echo "Step 2: Installing Git... <-->"
@@ -91,6 +91,7 @@ resource "aws_instance" "app" {
     NODE_ENV=production
     PORT=3000
     PG_DB_URI=postgres://beacoder_user:beacoder_password@${aws_db_instance.postgres.address}:5432/beacoder?sslmode=no-verify
+    JWT_SECRET_KEY=da8ef7889cddd2355da92070ffce44fdbf8b201538a87da4928978d1ea8f2c68cf545510da5c13b89fb9f69e3c4a88cb2fa5dd3213066696cd6d90dd6d90c344
     ENVEOF
     chown ec2-user:ec2-user .env
     
@@ -118,18 +119,8 @@ resource "aws_instance" "app" {
   EOF
 
   tags = {
-    Name = "BeACoderAppServer5"
+    Name = "BeACoderAppServer6"
   }
 
   depends_on = [aws_db_instance.postgres]
-}
-
-output "ec2_public_ip" {
-  description = "EC2 Public IP"
-  value       = aws_instance.app.public_ip
-}
-
-output "ec2_postman_url" {
-  description = "Base URL for accessing the Node.js app on EC2"
-  value       = "http://${aws_instance.app.public_ip}:3000/"
 }

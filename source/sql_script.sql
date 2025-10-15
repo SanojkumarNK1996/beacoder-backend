@@ -7,7 +7,7 @@ INSERT INTO public."Courses"
     id,
     "courseCode",
     "courseName",
-    description,
+    "description",
     "imageUrl",
     "difficultyLevel",
     "estimatedHours",

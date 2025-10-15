@@ -8,7 +8,7 @@ INSERT INTO public."Courses"
     "courseCode",
     "courseName",
     description,
-    "imgUrl",
+    "imageUrl",
     "difficultyLevel",
     "estimatedHours",
     "isActive",

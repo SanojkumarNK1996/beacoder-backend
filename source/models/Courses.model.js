@@ -19,7 +19,7 @@ const Courses = db.pgConn.define('Courses', {
   description: {
     type: DataTypes.TEXT,
   },
-  imgUrl: {
+  imageUrl: {
     type: DataTypes.STRING,
   },
   difficultyLevel: {

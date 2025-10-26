@@ -325,3 +325,73 @@ VALUES
 ('Queries for reporting (e.g., total sales, user activity)', NULL, 3, true, current_timestamp, current_timestamp, 22),
 ('Practice joins and subqueries on sample datasets', NULL, 4, true, current_timestamp, current_timestamp, 22)
 ON CONFLICT ("title", "topicId") DO NOTHING;
+
+
+-- Insert ContentBlocks with subtopicId
+
+INSERT INTO public."ContentBlocks"
+(
+    "displayOrder",
+    "dataType",
+    "title",
+    "data",
+    "isActive",
+    "createdAt",
+    "updatedAt",
+    "subtopicId"
+)
+VALUES
+-- YouTube Video
+(1, 'youtube_video', 'What is Python?', 
+$$
+{"videoUrl": "https://www.youtube.com/watch?v=kqtD5dpn9C8"}
+$$,
+true, current_timestamp, current_timestamp, 4),
+
+-- Notes (Rich HTML)
+(2, 'notes', 'Introduction to Python', 
+$$
+{"description": 
+"<h1>Welcome to Python</h1>
+<p>Python is a high-level, interpreted programming language known for its readability and versatility. It is widely used in data science, web development, automation, and AI.</p>
+<h2>Features of Python</h2>
+<ul>
+  <li>Easy to read and write</li>
+  <li>Dynamic typing and memory management</li>
+  <li>Huge standard library</li>
+  <li>Open-source and community-driven</li>
+  </ul>
+  <h2>Getting Started</h2><ol>
+  <li>Install Python from <a href='https://python.org'>python.org</a></li><li>Write a simple program using any text editor</li>
+  <li>Run the script using the 
+  <code>python</code> command</li></ol>
+  <h2>Example Code</h2>
+  <pre><code>def greet(name):\n    print(f'Hello, {name}!')\n\ngreet('World')</code></pre><p>Inline code example: use the <code>print()</code> function to display output.</p>"}
+$$,
+true, current_timestamp, current_timestamp, 4),
+
+-- Notes with code example
+(3, 'notes', 'Addition of Two Numbers in Python (Notes with code)', 
+$$
+{"description": "<h2>Addition Example</h2><p>In Python, you can add numbers easily using the <code>+</code> operator:</p><pre><code>a = 5\nb = 10\nprint(a + b)  # Output: 15</code></pre><p>Python automatically handles integer and float addition.</p>"}
+$$,
+true, current_timestamp, current_timestamp, 4),
+
+-- MCQ Set
+(4, 'mcq_set', 'Python Basics Quiz', 
+$$
+{"questions": [
+      {"question": "Who developed Python programming language?",
+       "options": ["Dennis Ritchie", "James Gosling", "Guido van Rossum", "Bjarne Stroustrup"],
+       "answer": "Guido van Rossum"},
+      {"question": "Which of the following is used to define a function in Python?",
+       "options": ["func", "define", "def", "function"],
+       "answer": "def"},
+      {"question": "What is the output of print(type([]))?",
+       "options": ["<class 'list'>", "<class 'tuple'>", "<class 'dict'>", "<class 'set'>"],
+       "answer": "<class 'list'>"}
+ ]}
+$$,
+true, current_timestamp, current_timestamp, 4)
+
+

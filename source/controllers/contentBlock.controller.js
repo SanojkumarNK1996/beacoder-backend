@@ -1,5 +1,6 @@
 const ContentBlocks = require("../models/ContentTable.model");
 const Subtopics = require("../models/Subtopics.model");
+const sanitizeHtml = require("sanitize-html");
 
 // ✅ Create Content Block
 const createContentBlock = async (req, res) => {
@@ -34,8 +35,29 @@ const createContentBlock = async (req, res) => {
             if (dataType === "youtube_video" && !data.videoUrl) {
                 return res.status(400).json({ message: "videoUrl is required for youtube_video type." });
             }
-            if (dataType === "notes" && !data.description) {
-                return res.status(400).json({ message: "description is required for notes type." });
+            if (dataType === "notes") {
+                if (!data.description) {
+                    return res.status(400).json({ message: "description is required for notes type." });
+                }
+
+                // Sanitize the HTML description to avoid XSS and strip unwanted tags/attributes.
+                // Allowed tags include headings, paragraphs, lists, pre/code for code blocks, links, basic formatting.
+                data.description = sanitizeHtml(data.description, {
+                    allowedTags: [
+                        "h1","h2","h3","h4","h5","h6",
+                        "p","ul","ol","li","br",
+                        "pre","code","strong","em","b","i","u",
+                        "a","span","div"
+                    ],
+                    allowedAttributes: {
+                        a: ["href", "name", "target", "rel"],
+                        // allow classes on code/span if you use styling classes client-side
+                        "*": ["class"]
+                    },
+                    allowedSchemes: ["http","https","mailto"],
+                    // preserve whitespace inside <pre><code>
+                    nonTextTags: ["style", "script", "textarea", "noscript"]
+                });
             }
             if (dataType === "mcq_set" && (!data.questions || !Array.isArray(data.questions))) {
                 return res.status(400).json({ message: "questions array is required for mcq_set type." });
@@ -134,8 +156,26 @@ const updateContentBlock = async (req, res) => {
         if (dataType === "youtube_video" && data && !data.videoUrl) {
             return res.status(400).json({ message: "videoUrl is required for youtube_video type." });
         }
-        if (dataType === "notes" && data && !data.description) {
-            return res.status(400).json({ message: "description is required for notes type." });
+        if (dataType === "notes" && data) {
+            if (!data.description) {
+                return res.status(400).json({ message: "description is required for notes type." });
+            }
+
+            // Sanitize incoming HTML description
+            data.description = sanitizeHtml(data.description, {
+                allowedTags: [
+                    "h1","h2","h3","h4","h5","h6",
+                    "p","ul","ol","li","br",
+                    "pre","code","strong","em","b","i","u",
+                    "a","span","div"
+                ],
+                allowedAttributes: {
+                    a: ["href", "name", "target", "rel"],
+                    "*": ["class"]
+                },
+                allowedSchemes: ["http","https","mailto"],
+                nonTextTags: ["style", "script", "textarea", "noscript"]
+            });
         }
         if (dataType === "mcq_set" && data && (!data.questions || !Array.isArray(data.questions))) {
             return res.status(400).json({ message: "questions array is required for mcq_set type." });

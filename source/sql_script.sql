@@ -23,7 +23,7 @@ VALUES
         'JAVA101',
         'Java',
         'Learn the fundamentals of Java programming including syntax, OOP concepts, and core libraries.',
-        '/images/java.png',
+        '/java.png',
         'easy',
         40,
         true,
@@ -38,7 +38,7 @@ VALUES
         'JAVA201',
         'Advanced Java',
         'Deep dive into Java frameworks and Spring basics for enterprise-grade applications.',
-        '/images/advanced-java.png',
+        '/advanced-java.png',
         'medium',
         50,
         true,
@@ -53,7 +53,7 @@ VALUES
         'DSA101',
         'Data Structures & Algorithms',
         'Master essential data structures and algorithms to write efficient and optimized code.',
-        '/images/dsa.png',
+        '/dsa.png',
         'hard',
         60,
         true,
@@ -68,7 +68,7 @@ VALUES
         'DB101',
         'Database Fundamentals',
         'Learn SQL, normalization, and relational database concepts with hands-on examples.',
-        '/images/database.png',
+        '/database.png',
         'medium',
         35,
         true,
@@ -83,7 +83,7 @@ VALUES
         'CLOUD101',
         'Cloud Computing (AWS)',
         'Explore AWS cloud services like EC2, S3, and Lambda, and deploy scalable applications in the cloud.',
-        '/images/aws.png',
+        '/aws.png',
         'medium',
         45,
         true,
@@ -98,7 +98,7 @@ VALUES
         'REACT101',
         'React JS',
         'Learn modern React development — components, hooks, and building dynamic web applications.',
-        '/images/react.png',
+        '/react.png',
         'medium',
         50,
         true,
@@ -139,6 +139,7 @@ ON CONFLICT ("title", "courseId") DO NOTHING;
 -- ============================================
 INSERT INTO public."Subtopics"
 (
+    id,
     title,
     description,
     "displayOrder",
@@ -149,49 +150,49 @@ INSERT INTO public."Subtopics"
 )
 VALUES
 -- Topic 1
-('What is Programming?', 'Definition and purpose, Different programming languages', 1, true, current_timestamp, current_timestamp, 1),
-('Introduction to Java', 'History of Java, Features of Java, JVM/JRE/JDK, Compiling and running Java programs', 2, true, current_timestamp, current_timestamp, 1),
-('Setting up the Java Environment', 'Installing JDK, Setting up IDE (Eclipse, IntelliJ, VS Code), Writing your first Java program (Hello World)', 3, true, current_timestamp, current_timestamp, 1),
+(1, 'What is Programming?', 'Definition and purpose, Different programming languages', 1, true, current_timestamp, current_timestamp, 1),
+(2, 'Introduction to Java', 'History of Java, Features of Java, JVM/JRE/JDK, Compiling and running Java programs', 2, true, current_timestamp, current_timestamp, 1),
+(3, 'Setting up the Java Environment', 'Installing JDK, Setting up IDE (Eclipse, IntelliJ, VS Code), Writing your first Java program (Hello World)', 3, true, current_timestamp, current_timestamp, 1),
 
 -- Topic 2
-('Data Types', 'Primitive types (int, float, double, char, boolean, byte, short, long), Non-primitive types (Strings, Arrays)', 1, true, current_timestamp, current_timestamp, 2),
-('Variables', 'Declaration and initialization, Naming conventions', 2, true, current_timestamp, current_timestamp, 2),
-('Operators', 'Arithmetic, Relational, Logical, Assignment, Increment & decrement', 3, true, current_timestamp, current_timestamp, 2),
-('Comments', 'Single-line, multi-line, and documentation comments', 4, true, current_timestamp, current_timestamp, 2),
+(4, 'Data Types', 'Primitive types (int, float, double, char, boolean, byte, short, long), Non-primitive types (Strings, Arrays)', 1, true, current_timestamp, current_timestamp, 2),
+(5, 'Variables', 'Declaration and initialization, Naming conventions', 2, true, current_timestamp, current_timestamp, 2),
+(6, 'Operators', 'Arithmetic, Relational, Logical, Assignment, Increment & decrement', 3, true, current_timestamp, current_timestamp, 2),
+(7, 'Comments', 'Single-line, multi-line, and documentation comments', 4, true, current_timestamp, current_timestamp, 2),
 
 -- Topic 3
-('Conditional Statements', 'if, if-else, if-else-if, switch-case', 1, true, current_timestamp, current_timestamp, 3),
-('Loops', 'for loop, while loop, do-while loop', 2, true, current_timestamp, current_timestamp, 3),
-('Branching Statements', 'break, continue, return', 3, true, current_timestamp, current_timestamp, 3),
+(8, 'Conditional Statements', 'if, if-else, if-else-if, switch-case', 1, true, current_timestamp, current_timestamp, 3),
+(9, 'Loops', 'for loop, while loop, do-while loop', 2, true, current_timestamp, current_timestamp, 3),
+(10, 'Branching Statements', 'break, continue, return', 3, true, current_timestamp, current_timestamp, 3),
 
 -- Topic 4
-('Defining methods', 'Method parameters and return types, Method overloading, Recursion basics', 1, true, current_timestamp, current_timestamp, 4),
+(11, 'Defining methods', 'Method parameters and return types, Method overloading, Recursion basics', 1, true, current_timestamp, current_timestamp, 4),
 
 -- Topic 5
-('Classes and Objects', 'Defining classes, Creating objects, Constructors', 1, true, current_timestamp, current_timestamp, 5),
-('Fields and Methods', 'Instance vs. static members', 2, true, current_timestamp, current_timestamp, 5),
-('Encapsulation', 'Access modifiers (private, public, protected), Getters and setters', 3, true, current_timestamp, current_timestamp, 5),
-('Inheritance', 'extends keyword, super keyword, Method overriding', 4, true, current_timestamp, current_timestamp, 5),
-('Polymorphism', 'Compile-time (method overloading), Runtime (method overriding)', 5, true, current_timestamp, current_timestamp, 5),
-('Abstraction', 'Abstract classes, Abstract methods, Interfaces', 6, true, current_timestamp, current_timestamp, 5),
-('Packages and Importing', '', 7, true, current_timestamp, current_timestamp, 5),
-('this keyword', '', 8, true, current_timestamp, current_timestamp, 5),
-('final keyword', '', 9, true, current_timestamp, current_timestamp, 5),
+(12, 'Classes and Objects', 'Defining classes, Creating objects, Constructors', 1, true, current_timestamp, current_timestamp, 5),
+(13, 'Fields and Methods', 'Instance vs. static members', 2, true, current_timestamp, current_timestamp, 5),
+(14, 'Encapsulation', 'Access modifiers (private, public, protected), Getters and setters', 3, true, current_timestamp, current_timestamp, 5),
+(15, 'Inheritance', 'extends keyword, super keyword, Method overriding', 4, true, current_timestamp, current_timestamp, 5),
+(16, 'Polymorphism', 'Compile-time (method overloading), Runtime (method overriding)', 5, true, current_timestamp, current_timestamp, 5),
+(17, 'Abstraction', 'Abstract classes, Abstract methods, Interfaces', 6, true, current_timestamp, current_timestamp, 5),
+(18, 'Packages and Importing', '', 7, true, current_timestamp, current_timestamp, 5),
+(19, 'this keyword', '', 8, true, current_timestamp, current_timestamp, 5),
+(20, 'final keyword', '', 9, true, current_timestamp, current_timestamp, 5),
 
 -- Topic 6
-('Arrays', 'Single-dimensional and multi-dimensional arrays', 1, true, current_timestamp, current_timestamp, 6),
-('Strings and String Methods', '', 2, true, current_timestamp, current_timestamp, 6),
-('Collections Framework', 'ArrayList, LinkedList, HashMap, HashSet', 3, true, current_timestamp, current_timestamp, 6),
-('Iterating collections', 'loops, for-each', 4, true, current_timestamp, current_timestamp, 6),
+(21, 'Arrays', 'Single-dimensional and multi-dimensional arrays', 1, true, current_timestamp, current_timestamp, 6),
+(22, 'Strings and String Methods', '', 2, true, current_timestamp, current_timestamp, 6),
+(23, 'Collections Framework', 'ArrayList, LinkedList, HashMap, HashSet', 3, true, current_timestamp, current_timestamp, 6),
+(24, 'Iterating collections', 'loops, for-each', 4, true, current_timestamp, current_timestamp, 6),
 
 -- Topic 7
-('Exception Handling', 'What are exceptions?, Types: checked vs. unchecked, Try-catch-finally, throw and throws, Custom exceptions', 1, true, current_timestamp, current_timestamp, 7),
+(25, 'Exception Handling', 'What are exceptions?, Types: checked vs. unchecked, Try-catch-finally, throw and throws, Custom exceptions', 1, true, current_timestamp, current_timestamp, 7),
 
 -- Topic 8
-('Multithreading', 'Creating threads, Thread lifecycle, Synchronization, Runnable interface', 1, true, current_timestamp, current_timestamp, 8),
+(26, 'Multithreading', 'Creating threads, Thread lifecycle, Synchronization, Runnable interface', 1, true, current_timestamp, current_timestamp, 8),
 
 -- Topic 9
-('Java 8+ Features', 'Lambda expressions, Streams API, Optional class, Functional interfaces', 1, true, current_timestamp, current_timestamp, 9)
+(27, 'Java 8+ Features', 'Lambda expressions, Streams API, Optional class, Functional interfaces', 1, true, current_timestamp, current_timestamp, 9)
 
 ON CONFLICT ("title", "topicId") DO NOTHING;
 
@@ -327,71 +328,70 @@ VALUES
 ON CONFLICT ("title", "topicId") DO NOTHING;
 
 
--- Insert ContentBlocks with subtopicId
+-- -- Insert ContentBlocks with subtopicId
+-- INSERT INTO public."ContentBlocks"
+-- (
+--     "displayOrder",
+--     "dataType",
+--     "title",
+--     "data",
+--     "isActive",
+--     "createdAt",
+--     "updatedAt",
+--     "subtopicId"
+-- )
+-- VALUES
+-- -- YouTube Video
+-- (1, 'youtube_video', 'What is Python?', 
+-- $$
+-- {"videoUrl": "https://www.youtube.com/watch?v=kqtD5dpn9C8"}
+-- $$,
+-- true, current_timestamp, current_timestamp, 4),
 
-INSERT INTO public."ContentBlocks"
-(
-    "displayOrder",
-    "dataType",
-    "title",
-    "data",
-    "isActive",
-    "createdAt",
-    "updatedAt",
-    "subtopicId"
-)
-VALUES
--- YouTube Video
-(1, 'youtube_video', 'What is Python?', 
-$$
-{"videoUrl": "https://www.youtube.com/watch?v=kqtD5dpn9C8"}
-$$,
-true, current_timestamp, current_timestamp, 4),
+-- -- Notes (Rich HTML)
+-- (2, 'notes', 'Introduction to Python', 
+-- $$
+-- {"description": 
+-- "<h1>Welcome to Python</h1>
+-- <p>Python is a high-level, interpreted programming language known for its readability and versatility. It is widely used in data science, web development, automation, and AI.</p>
+-- <h2>Features of Python</h2>
+-- <ul>
+--   <li>Easy to read and write</li>
+--   <li>Dynamic typing and memory management</li>
+--   <li>Huge standard library</li>
+--   <li>Open-source and community-driven</li>
+--   </ul>
+--   <h2>Getting Started</h2><ol>
+--   <li>Install Python from <a href='https://python.org'>python.org</a></li><li>Write a simple program using any text editor</li>
+--   <li>Run the script using the 
+--   <code>python</code> command</li></ol>
+--   <h2>Example Code</h2>
+--   <pre><code>def greet(name):\n    print(f'Hello, {name}!')\n\ngreet('World')</code></pre><p>Inline code example: use the <code>print()</code> function to display output.</p>"}
+-- $$,
+-- true, current_timestamp, current_timestamp, 4),
 
--- Notes (Rich HTML)
-(2, 'notes', 'Introduction to Python', 
-$$
-{"description": 
-"<h1>Welcome to Python</h1>
-<p>Python is a high-level, interpreted programming language known for its readability and versatility. It is widely used in data science, web development, automation, and AI.</p>
-<h2>Features of Python</h2>
-<ul>
-  <li>Easy to read and write</li>
-  <li>Dynamic typing and memory management</li>
-  <li>Huge standard library</li>
-  <li>Open-source and community-driven</li>
-  </ul>
-  <h2>Getting Started</h2><ol>
-  <li>Install Python from <a href='https://python.org'>python.org</a></li><li>Write a simple program using any text editor</li>
-  <li>Run the script using the 
-  <code>python</code> command</li></ol>
-  <h2>Example Code</h2>
-  <pre><code>def greet(name):\n    print(f'Hello, {name}!')\n\ngreet('World')</code></pre><p>Inline code example: use the <code>print()</code> function to display output.</p>"}
-$$,
-true, current_timestamp, current_timestamp, 4),
+-- -- Notes with code example
+-- (3, 'notes', 'Addition of Two Numbers in Python (Notes with code)', 
+-- $$
+-- {"description": "<h2>Addition Example</h2><p>In Python, you can add numbers easily using the <code>+</code> operator:</p><pre><code>a = 5\nb = 10\nprint(a + b)  # Output: 15</code></pre><p>Python automatically handles integer and float addition.</p>"}
+-- $$,
+-- true, current_timestamp, current_timestamp, 4),
 
--- Notes with code example
-(3, 'notes', 'Addition of Two Numbers in Python (Notes with code)', 
-$$
-{"description": "<h2>Addition Example</h2><p>In Python, you can add numbers easily using the <code>+</code> operator:</p><pre><code>a = 5\nb = 10\nprint(a + b)  # Output: 15</code></pre><p>Python automatically handles integer and float addition.</p>"}
-$$,
-true, current_timestamp, current_timestamp, 4),
-
--- MCQ Set
-(4, 'mcq_set', 'Python Basics Quiz', 
-$$
-{"questions": [
-      {"question": "Who developed Python programming language?",
-       "options": ["Dennis Ritchie", "James Gosling", "Guido van Rossum", "Bjarne Stroustrup"],
-       "answer": "Guido van Rossum"},
-      {"question": "Which of the following is used to define a function in Python?",
-       "options": ["func", "define", "def", "function"],
-       "answer": "def"},
-      {"question": "What is the output of print(type([]))?",
-       "options": ["<class 'list'>", "<class 'tuple'>", "<class 'dict'>", "<class 'set'>"],
-       "answer": "<class 'list'>"}
- ]}
-$$,
-true, current_timestamp, current_timestamp, 4)
+-- -- MCQ Set
+-- (4, 'mcq_set', 'Python Basics Quiz', 
+-- $$
+-- {"questions": [
+--       {"question": "Who developed Python programming language?",
+--        "options": ["Dennis Ritchie", "James Gosling", "Guido van Rossum", "Bjarne Stroustrup"],
+--        "answer": "Guido van Rossum"},
+--       {"question": "Which of the following is used to define a function in Python?",
+--        "options": ["func", "define", "def", "function"],
+--        "answer": "def"},
+--       {"question": "What is the output of print(type([]))?",
+--        "options": ["<class 'list'>", "<class 'tuple'>", "<class 'dict'>", "<class 'set'>"],
+--        "answer": "<class 'list'>"}
+--  ]}
+-- $$,
+-- true, current_timestamp, current_timestamp, 4)
 
 

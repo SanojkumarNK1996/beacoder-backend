@@ -223,15 +223,15 @@ VALUES
 (18, 'Transactions and Concurrency', NULL, 9, true, current_timestamp, current_timestamp, 5),
 (19, 'Stored Procedures, Functions, and Triggers', NULL, 10, true, current_timestamp, current_timestamp, 5),
 (20, 'SQL Performance and Optimization Basics', NULL, 11, true, current_timestamp, current_timestamp, 5),
-(21, 'Backup, Restore, and Security Basics', NULL, 12, true, current_timestamp, current_timestamp, 5),
-(22, 'Hands-On Projects / Practice', NULL, 13, true, current_timestamp, current_timestamp, 5)
+(21, 'Hands-On Projects / Practice', NULL, 13, true, current_timestamp, current_timestamp, 5)
 ON CONFLICT ("title", "courseId") DO NOTHING;
 
 -- ============================================
 -- Insert Subtopics (clean hierarchy) with updated topicIds
 -- ============================================
 INSERT INTO public."Subtopics"
-(
+(   
+    id,
     title,
     description,
     "displayOrder",
@@ -242,89 +242,78 @@ INSERT INTO public."Subtopics"
 )
 VALUES
 -- Topic 10: Introduction to Databases
-('What is a Database?', NULL, 1, true, current_timestamp, current_timestamp, 10),
-('Types of Databases', 'Relational Databases (RDBMS), NoSQL Databases', 2, true, current_timestamp, current_timestamp, 10),
-('Database vs File System', NULL, 3, true, current_timestamp, current_timestamp, 10),
-('Real-world examples of databases', NULL, 4, true, current_timestamp, current_timestamp, 10),
-('Importance of databases in software applications', NULL, 5, true, current_timestamp, current_timestamp, 10),
+('28', 'What is a Database?', NULL, 1, true, current_timestamp, current_timestamp, 10),
+('29', 'Types of Databases', 'Relational Databases (RDBMS), NoSQL Databases', 2, true, current_timestamp, current_timestamp, 10),
+('30', 'Database vs File System', NULL, 3, true, current_timestamp, current_timestamp, 10),
 
 -- Topic 11: Database Concepts and Architecture
-('Database Management System (DBMS) overview', NULL, 1, true, current_timestamp, current_timestamp, 11),
-('Components of DBMS', 'DB Engine, Database Schema, Query Processor, Storage Manager', 2, true, current_timestamp, current_timestamp, 11),
-('Client-Server Architecture', NULL, 3, true, current_timestamp, current_timestamp, 11),
-('ACID Properties (Atomicity, Consistency, Isolation, Durability)', NULL, 4, true, current_timestamp, current_timestamp, 11),
-('Transactions and concurrency', NULL, 5, true, current_timestamp, current_timestamp, 11),
-('Keys in Databases', 'Primary Key, Foreign Key, Unique Key, Composite Key', 6, true, current_timestamp, current_timestamp, 11),
+('31', 'Database Management System (DBMS) overview', NULL, 1, true, current_timestamp, current_timestamp, 11),
+('32', 'Components of DBMS', 'DB Engine, Database Schema, Query Processor, Storage Manager', 2, true, current_timestamp, current_timestamp, 11),
+('33', 'Client-Server Architecture', NULL, 3, true, current_timestamp, current_timestamp, 11),
+('34', 'ACID Properties (Atomicity, Consistency, Isolation, Durability)', NULL, 4, true, current_timestamp, current_timestamp, 11),
+('35', 'Transactions and concurrency', NULL, 5, true, current_timestamp, current_timestamp, 11),
+('36', 'Keys in Databases', 'Primary Key, Foreign Key, Unique Key, Composite Key', 6, true, current_timestamp, current_timestamp, 11),
 
 -- Topic 12: Introduction to SQL
-('What is SQL?', NULL, 1, true, current_timestamp, current_timestamp, 12),
-('SQL vs NoSQL', NULL, 2, true, current_timestamp, current_timestamp, 12),
-('Types of SQL commands', 'DDL (Data Definition Language), DML (Data Manipulation Language), DCL (Data Control Language), TCL (Transaction Control Language)', 3, true, current_timestamp, current_timestamp, 12),
-('SQL syntax basics', NULL, 4, true, current_timestamp, current_timestamp, 12),
+('37', 'What is SQL?', NULL, 1, true, current_timestamp, current_timestamp, 12),
+('38', 'Types of SQL commands', 'DDL (Data Definition Language), DML (Data Manipulation Language), DCL (Data Control Language), TCL (Transaction Control Language)', 3, true, current_timestamp, current_timestamp, 12),
+('39', 'SQL syntax basics', NULL, 4, true, current_timestamp, current_timestamp, 12),
 
 -- Topic 13: Database Design
-('Database Normalization', '1NF, 2NF, 3NF, BCNF', 1, true, current_timestamp, current_timestamp, 13),
-('ER Diagrams (Entity-Relationship Modeling)', NULL, 2, true, current_timestamp, current_timestamp, 13),
-('Relationships', 'One-to-One, One-to-Many, Many-to-Many', 3, true, current_timestamp, current_timestamp, 13),
-('Indexing basics', NULL, 4, true, current_timestamp, current_timestamp, 13),
-('Data types in SQL', NULL, 5, true, current_timestamp, current_timestamp, 13),
+('40', 'Database Normalization', '1NF, 2NF, 3NF, BCNF', 1, true, current_timestamp, current_timestamp, 13),
+('41', 'ER Diagrams (Entity-Relationship Modeling)', NULL, 2, true, current_timestamp, current_timestamp, 13),
+('42', 'Relationships', 'One-to-One, One-to-Many, Many-to-Many', 3, true, current_timestamp, current_timestamp, 13),
+('43', 'Indexing basics', NULL, 4, true, current_timestamp, current_timestamp, 13),
+('44', 'Data types in SQL', NULL, 5, true, current_timestamp, current_timestamp, 13),
 
 -- Topic 14: Creating and Modifying Database Objects
-('Creating databases', NULL, 1, true, current_timestamp, current_timestamp, 14),
-('Creating tables', NULL, 2, true, current_timestamp, current_timestamp, 14),
-('Modifying tables', 'ALTER TABLE, Adding/Deleting columns', 3, true, current_timestamp, current_timestamp, 14),
-('Dropping tables and databases', NULL, 4, true, current_timestamp, current_timestamp, 14),
-('Constraints', 'NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, CHECK, DEFAULT', 5, true, current_timestamp, current_timestamp, 14),
+('45', 'Creating databases and tables', NULL, 1, true, current_timestamp, current_timestamp, 14),
+('46', 'Modifying tables', 'ALTER TABLE, Adding/Deleting columns', 3, true, current_timestamp, current_timestamp, 14),
+('47', 'Dropping tables and databases', NULL, 4, true, current_timestamp, current_timestamp, 14),
+('48', 'Constraints', 'NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, CHECK, DEFAULT', 5, true, current_timestamp, current_timestamp, 14),
 
 -- Topic 15: Data Manipulation (DML)
-('Inserting data', NULL, 1, true, current_timestamp, current_timestamp, 15),
-('Reading data', 'SELECT *, SELECT column_name, Filtering with WHERE, Sorting with ORDER BY, Limiting results (LIMIT/OFFSET)', 2, true, current_timestamp, current_timestamp, 15),
-('Updating data', NULL, 3, true, current_timestamp, current_timestamp, 15),
-('Deleting data', NULL, 4, true, current_timestamp, current_timestamp, 15),
+('49', 'Inserting data', NULL, 1, true, current_timestamp, current_timestamp, 15),
+('50', 'Reading data', 'SELECT *, SELECT column_name, Filtering with WHERE, Sorting with ORDER BY, Limiting results (LIMIT/OFFSET)', 2, true, current_timestamp, current_timestamp, 15),
+('51', 'Updating data', NULL, 3, true, current_timestamp, current_timestamp, 15),
+('52', 'Deleting data', NULL, 4, true, current_timestamp, current_timestamp, 15),
 
 -- Topic 16: Advanced Querying
-('Aggregate functions', 'COUNT, SUM, AVG, MAX, MIN', 1, true, current_timestamp, current_timestamp, 16),
-('Grouping data', 'GROUP BY, HAVING', 2, true, current_timestamp, current_timestamp, 16),
-('Joins', 'INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN, CROSS JOIN', 3, true, current_timestamp, current_timestamp, 16),
-('Subqueries', 'Single-row, Multi-row', 4, true, current_timestamp, current_timestamp, 16),
-('Set operations', 'UNION, UNION ALL, INTERSECT, EXCEPT', 5, true, current_timestamp, current_timestamp, 16),
+('53', 'Aggregate functions', 'COUNT, SUM, AVG, MAX, MIN', 1, true, current_timestamp, current_timestamp, 16),
+('54', 'Grouping data', 'GROUP BY, HAVING', 2, true, current_timestamp, current_timestamp, 16),
+('55', 'Joins', 'INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN, CROSS JOIN', 3, true, current_timestamp, current_timestamp, 16),
+('56', 'Subqueries', 'Single-row, Multi-row', 4, true, current_timestamp, current_timestamp, 16),
+('57', 'Set operations', 'UNION, UNION ALL, INTERSECT, EXCEPT', 5, true, current_timestamp, current_timestamp, 16),
 
 -- Topic 17: Views and Indexes
-('Creating and using views', NULL, 1, true, current_timestamp, current_timestamp, 17),
-('Advantages of views', NULL, 2, true, current_timestamp, current_timestamp, 17),
-('Indexing', 'Primary index, Unique index, Composite index, Clustered vs Non-clustered indexes', 3, true, current_timestamp, current_timestamp, 17),
+('58', 'Creating and using views', NULL, 1, true, current_timestamp, current_timestamp, 17),
+('59', 'Advantages of views', NULL, 2, true, current_timestamp, current_timestamp, 17),
+('60', 'Indexing', 'Primary index, Unique index, Composite index, Clustered vs Non-clustered indexes', 3, true, current_timestamp, current_timestamp, 17),
 
 -- Topic 18: Transactions and Concurrency
-('Transactions in SQL', 'BEGIN, COMMIT, ROLLBACK', 1, true, current_timestamp, current_timestamp, 18),
-('Savepoints', NULL, 2, true, current_timestamp, current_timestamp, 18),
-('Locks and concurrency control', NULL, 3, true, current_timestamp, current_timestamp, 18),
-('Isolation levels', 'READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, SERIALIZABLE', 4, true, current_timestamp, current_timestamp, 18),
+('61', 'Transactions in SQL', 'BEGIN, COMMIT, ROLLBACK', 1, true, current_timestamp, current_timestamp, 18),
+('62', 'Savepoints', NULL, 2, true, current_timestamp, current_timestamp, 18),
+('63', 'Locks and concurrency control', NULL, 3, true, current_timestamp, current_timestamp, 18),
+('64', 'Isolation levels', 'READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, SERIALIZABLE', 4, true, current_timestamp, current_timestamp, 18),
 
 -- Topic 19: Stored Procedures, Functions, and Triggers
-('Introduction to stored procedures', NULL, 1, true, current_timestamp, current_timestamp, 19),
-('Creating and executing procedures', NULL, 2, true, current_timestamp, current_timestamp, 19),
-('User-defined functions', NULL, 3, true, current_timestamp, current_timestamp, 19),
-('Triggers', 'BEFORE, AFTER triggers', 4, true, current_timestamp, current_timestamp, 19),
-('Pros and cons of using procedures/functions/triggers', NULL, 5, true, current_timestamp, current_timestamp, 19),
+('65', 'Introduction to stored procedures', NULL, 1, true, current_timestamp, current_timestamp, 19),
+('66', 'Creating and executing procedures', NULL, 2, true, current_timestamp, current_timestamp, 19),
+('67', 'User-defined functions', NULL, 3, true, current_timestamp, current_timestamp, 19),
+('68', 'Triggers', 'BEFORE, AFTER triggers', 4, true, current_timestamp, current_timestamp, 19),
+('69', 'Pros and cons of using procedures/functions/triggers', NULL, 5, true, current_timestamp, current_timestamp, 19),
 
 -- Topic 20: SQL Performance and Optimization Basics
-('Query execution plan', NULL, 1, true, current_timestamp, current_timestamp, 20),
-('Index usage for optimization', NULL, 2, true, current_timestamp, current_timestamp, 20),
-('Avoiding common pitfalls', NULL, 3, true, current_timestamp, current_timestamp, 20),
-('Best practices in SQL queries', NULL, 4, true, current_timestamp, current_timestamp, 20),
+('70', 'Query execution plan', NULL, 1, true, current_timestamp, current_timestamp, 20),
+('71', 'Index usage for optimization', NULL, 2, true, current_timestamp, current_timestamp, 20),
+('72', 'Avoiding common pitfalls', NULL, 3, true, current_timestamp, current_timestamp, 20),
+('73', 'Best practices in SQL queries', NULL, 4, true, current_timestamp, current_timestamp, 20),
 
--- Topic 21: Backup, Restore, and Security Basics
-('Backing up databases', NULL, 1, true, current_timestamp, current_timestamp, 21),
-('Restoring databases', NULL, 2, true, current_timestamp, current_timestamp, 21),
-('User roles and permissions', NULL, 3, true, current_timestamp, current_timestamp, 21),
-('Granting and revoking privileges', NULL, 4, true, current_timestamp, current_timestamp, 21),
-('Basic security practices', NULL, 5, true, current_timestamp, current_timestamp, 21),
-
--- Topic 22: Hands-On Projects / Practice
-('Create a database for a Library Management System', NULL, 1, true, current_timestamp, current_timestamp, 22),
-('Create a database for an Online Store', NULL, 2, true, current_timestamp, current_timestamp, 22),
-('Queries for reporting (e.g., total sales, user activity)', NULL, 3, true, current_timestamp, current_timestamp, 22),
-('Practice joins and subqueries on sample datasets', NULL, 4, true, current_timestamp, current_timestamp, 22)
+-- Topic 21: Hands-On Projects / Practice
+('74', 'Create a database for a Library Management System', NULL, 1, true, current_timestamp, current_timestamp, 21),
+('75', 'Create a database for an Online Store', NULL, 2, true, current_timestamp, current_timestamp, 21),
+('76', 'Queries for reporting (e.g., total sales, user activity)', NULL, 3, true, current_timestamp, current_timestamp, 21),
+('77', 'Practice joins and subqueries on sample datasets', NULL, 4, true, current_timestamp, current_timestamp, 21)
 ON CONFLICT ("title", "topicId") DO NOTHING;
 
 

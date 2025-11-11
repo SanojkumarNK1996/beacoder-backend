@@ -1,4 +1,5 @@
 const ContentBlocks = require("../models/ContentTable.model");
+const Quiz = require("../models/Quiz.model");
 const Subtopics = require("../models/Subtopics.model");
 const sanitizeHtml = require("sanitize-html");
 
@@ -6,7 +7,7 @@ const sanitizeHtml = require("sanitize-html");
 const createContentBlock = async (req, res) => {
     try {
         const { subtopicId } = req.params;
-        const contentBlocks = req.body; 
+        const contentBlocks = req.body;
 
         if (!Array.isArray(contentBlocks) || contentBlocks.length === 0) {
             return res.status(400).json({
@@ -44,17 +45,17 @@ const createContentBlock = async (req, res) => {
                 // Allowed tags include headings, paragraphs, lists, pre/code for code blocks, links, basic formatting.
                 data.description = sanitizeHtml(data.description, {
                     allowedTags: [
-                        "h1","h2","h3","h4","h5","h6",
-                        "p","ul","ol","li","br",
-                        "pre","code","strong","em","b","i","u",
-                        "a","span","div"
+                        "h1", "h2", "h3", "h4", "h5", "h6",
+                        "p", "ul", "ol", "li", "br",
+                        "pre", "code", "strong", "em", "b", "i", "u",
+                        "a", "span", "div"
                     ],
                     allowedAttributes: {
                         a: ["href", "name", "target", "rel"],
                         // allow classes on code/span if you use styling classes client-side
                         "*": ["class"]
                     },
-                    allowedSchemes: ["http","https","mailto"],
+                    allowedSchemes: ["http", "https", "mailto"],
                     // preserve whitespace inside <pre><code>
                     nonTextTags: ["style", "script", "textarea", "noscript"]
                 });
@@ -97,10 +98,28 @@ const getContentBlocksBySubtopic = async (req, res) => {
             return res.status(404).json({ message: "Subtopic not found." });
         }
 
+        // const contentBlocks = await ContentBlocks.findAll({
+        //     where: { subtopicId },
+        //     order: [["displayOrder", "ASC"]],
+        // });
+
         const contentBlocks = await ContentBlocks.findAll({
             where: { subtopicId },
-            order: [["displayOrder", "ASC"]],
+            include: [
+                {
+                    model: Quiz,
+                    where: { isActive: true },
+                    required: false,              // keeps content blocks even if no quiz exists
+                    attributes: ['id', 'title', 'type', 'questionData'],
+                },
+            ],
+            order: [
+                ['displayOrder', 'ASC'],
+                [Quiz, 'displayOrder', 'ASC'],
+            ],
         });
+
+        console.log("contentBlocks",contentBlocks)
 
         return res.status(200).json({
             statusCode: 200,
@@ -108,6 +127,7 @@ const getContentBlocksBySubtopic = async (req, res) => {
             data: contentBlocks,
         });
     } catch (error) {
+        console.log("error",error)
         return res.status(500).json({
             statusCode: 500,
             message: "Failed to fetch content blocks.",
@@ -164,16 +184,16 @@ const updateContentBlock = async (req, res) => {
             // Sanitize incoming HTML description
             data.description = sanitizeHtml(data.description, {
                 allowedTags: [
-                    "h1","h2","h3","h4","h5","h6",
-                    "p","ul","ol","li","br",
-                    "pre","code","strong","em","b","i","u",
-                    "a","span","div"
+                    "h1", "h2", "h3", "h4", "h5", "h6",
+                    "p", "ul", "ol", "li", "br",
+                    "pre", "code", "strong", "em", "b", "i", "u",
+                    "a", "span", "div"
                 ],
                 allowedAttributes: {
                     a: ["href", "name", "target", "rel"],
                     "*": ["class"]
                 },
-                allowedSchemes: ["http","https","mailto"],
+                allowedSchemes: ["http", "https", "mailto"],
                 nonTextTags: ["style", "script", "textarea", "noscript"]
             });
         }

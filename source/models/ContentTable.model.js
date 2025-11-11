@@ -15,10 +15,6 @@ const ContentBlocks = db.pgConn.define("ContentBlocks", {
         type: DataTypes.ENUM(
             "youtube_video",
             "notes",
-            "mcq_set",
-            "interview_questions",
-            "programming_assignment",
-            "github_project",
             "user_notes_section"
         ),
         allowNull: false,

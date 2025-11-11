@@ -7,6 +7,11 @@ const Quiz = db.pgConn.define('Quiz', {
     primaryKey: true,
     autoIncrement: true,
   },
+  type: {
+    type: DataTypes.ENUM('mcq_set', 'interview_question'),
+    allowNull: false,
+    defaultValue: 'mcq_set',
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,

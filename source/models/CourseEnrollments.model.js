@@ -7,14 +7,6 @@ const CourseEnrollments = db.pgConn.define('CourseEnrollments', {
     primaryKey: true,
     autoIncrement: true,
   },
-  // userId: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: false,
-  // },
-  // courseId: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: false,
-  // },
   completionPercentage: {
     type: DataTypes.DECIMAL(5,2),
     defaultValue: 0.00,

@@ -50,7 +50,6 @@ const bulkCreateTopics = async (req, res) => {
       data: createdTopics,
     });
   } catch (error) {
-    console.log("error", error)
     return res.status(500).json({
       success: false,
       message: error.message,

@@ -1,4 +1,5 @@
 const { requireAuth } = require('../middleware/authorize');
+const userController = require('../controllers/user.controller');
 
 const router = require('express').Router();
 
@@ -18,5 +19,11 @@ router.get("/profile", requireAuth, async (req, res) => {
         return res.status(500).json({ error: error.message })
     }
 })
+
+router.get('/my-courses',requireAuth, userController.getUserCourses);
+router.post('/content/:contentBlockId/complete',requireAuth,userController.markContentCompleted);
+router.post('/:courseId/enroll',requireAuth, userController.enrollInCourse);
+
+
 
 module.exports = router

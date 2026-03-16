@@ -6,6 +6,9 @@ const Subtopics = require("./Subtopics.model");
 const ContentBlocks = require("./ContentTable.model");
 const Quiz = require("./Quiz.model");
 const QuizSubmission = require('./QuizSubmission.model');
+const UserContentProgress = require("./UserContentProgress.model");
+const Assignments = require('./Assignment.model');
+const AssignmentSubmissions = require('./AssignmentSubmission.model');
 
 
 Users.hasMany(Courses, { foreignKey: "instructorId" });
@@ -72,3 +75,29 @@ QuizSubmission.belongsTo(Users, { foreignKey: 'userId' });
 
 Quiz.hasMany(QuizSubmission, { foreignKey: 'quizId' });
 QuizSubmission.belongsTo(Quiz, { foreignKey: 'quizId' });
+
+// user progress
+ContentBlocks.hasMany(UserContentProgress, { foreignKey: 'contentBlockId' });
+UserContentProgress.belongsTo(ContentBlocks, { foreignKey: 'contentBlockId' });
+
+Users.hasMany(UserContentProgress, { foreignKey: 'userId' });
+UserContentProgress.belongsTo(Users, { foreignKey: 'userId' });
+
+// Assignment
+Assignments.belongsTo(Courses, { foreignKey: 'courseId' });
+Courses.hasMany(Assignments, { foreignKey: 'courseId' });
+
+// Optional Topic
+Assignments.belongsTo(CourseTopics, { foreignKey: 'topicId' });
+CourseTopics.hasMany(Assignments, { foreignKey: 'topicId' });
+
+// Optional Subtopic
+Assignments.belongsTo(Subtopics, { foreignKey: 'subtopicId' });
+Subtopics.hasMany(Assignments, { foreignKey: 'subtopicId' });
+
+// Submissions
+AssignmentSubmissions.belongsTo(Assignments, { foreignKey: 'assignmentId' });
+Assignments.hasMany(AssignmentSubmissions, { foreignKey: 'assignmentId' });
+
+AssignmentSubmissions.belongsTo(Users, { foreignKey: 'userId' });
+Users.hasMany(AssignmentSubmissions, { foreignKey: 'userId' });

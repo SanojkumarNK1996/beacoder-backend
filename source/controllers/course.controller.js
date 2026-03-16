@@ -1,4 +1,6 @@
+const CourseEnrollments = require('../models/CourseEnrollments.model');
 const Courses = require('../models/Courses.model');
+const { Op } = require("sequelize");
 
 // Create a new course
 const createCourse = async (req, res) => {
@@ -28,7 +30,6 @@ const updateCourse = async (req, res) => {
         const [updated] = await Courses.update(req.body, {
             where: { id: courseId },
         });
-        console.log("req.body", req.body)
 
         if (!updated) {
             return res.status(404).json({ success: false, message: 'Course not found' });
@@ -60,16 +61,35 @@ const deleteCourse = async (req, res) => {
 
 // Get all courses
 const getAllCourses = async (req, res) => {
-    try {
-        const courses = await Courses.findAll({
-            where: { isActive: true },
-            order: [['createdAt', 'DESC']],
-        });
+  try {
+    const userId = req.user.id;
 
-        res.json({ success: true, data: courses });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+    // 1️⃣ Get enrolled course IDs
+    const enrolledCourses = await CourseEnrollments.findAll({
+      where: { userId },
+      attributes: ["courseId"]
+    });
+
+    const enrolledCourseIds = enrolledCourses.map(e => e.courseId);
+
+    // 2️⃣ Fetch all active courses excluding enrolled ones
+    const courses = await Courses.findAll({
+      where: {
+        isActive: true,
+        id: {
+          [Op.notIn]: enrolledCourseIds.length > 0
+            ? enrolledCourseIds
+            : [0] // fallback to avoid empty array issue
+        }
+      },
+      order: [["createdAt", "DESC"]]
+    });
+
+    res.json({ success: true, data: courses });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 const getCourseById = async (req, res) => {

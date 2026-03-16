@@ -1,9 +1,17 @@
 const { Sequelize } = require('sequelize');
-
+const fs = require("fs")
 class PostgresConnector {
   constructor() {
     this.PG_DB_URI = process.env.PG_DB_URI;
-    this.pgConn = new Sequelize(this.PG_DB_URI, { logging: false });
+    this.pgConn = new Sequelize(this.PG_DB_URI, {
+      logging: false,
+      dialectOptions: {
+        // ssl: {
+        //   rejectUnauthorized: true,
+        //   ca: fs.readFileSync('keys/global-bundle.pem').toString(),
+        // },
+      },
+    });
     this.POSTGRES_RETRY_COUNT = 0;
     this.POSTGRES_RETRY_LIMIT = 3;
     this.RETRY_TIMEOUT = 5 * 1000; // 5 seconds

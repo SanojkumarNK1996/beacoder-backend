@@ -4,6 +4,7 @@ router.use('/auth', require("./auth.routes"));
 router.use('/user', require("./user.routes"));
 router.use('/admin', require("./admin.routes"));
 router.use('/courses', require("./course.routes"));
+router.use('/assignments', require("./assignment.routes"));
 router.use('/courses/:courseId', require("./quiz.routes"));
 
 module.exports = router

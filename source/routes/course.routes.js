@@ -13,7 +13,7 @@ router.post('/', courseController.createCourse);
 router.patch('/:courseId', courseController.updateCourse);
 
 // List all courses
-router.get('/', courseController.getAllCourses);
+router.get('/', requireAuth, courseController.getAllCourses);
 
 // get Single courses
 router.get('/:courseId', courseController.getCourseById);

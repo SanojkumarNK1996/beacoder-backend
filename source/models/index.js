@@ -9,6 +9,10 @@ const QuizSubmission = require('./QuizSubmission.model');
 const UserContentProgress = require("./UserContentProgress.model");
 const Assignments = require('./Assignment.model');
 const AssignmentSubmissions = require('./AssignmentSubmission.model');
+const Notification = require('./Notification.model');
+const Badge = require('./Badge.model');
+const UserBadge = require('./UserBadge.model');
+const Discussion = require('./Discussion.model');
 
 
 Users.hasMany(Courses, { foreignKey: "instructorId" });
@@ -101,3 +105,32 @@ Assignments.hasMany(AssignmentSubmissions, { foreignKey: 'assignmentId' });
 
 AssignmentSubmissions.belongsTo(Users, { foreignKey: 'userId' });
 Users.hasMany(AssignmentSubmissions, { foreignKey: 'userId' });
+
+// Notification
+Notification.belongsTo(Users, { foreignKey: 'userId' });
+Users.hasMany(Notification, { foreignKey: 'userId' });
+
+const DiscussionReply = require('./DiscussionReply.model');
+
+// Discussion system
+Discussion.belongsTo(Users, { foreignKey: 'userId' });
+Users.hasMany(Discussion, { foreignKey: 'userId' });
+
+Discussion.belongsTo(Courses, { foreignKey: 'courseId' });
+Courses.hasMany(Discussion, { foreignKey: 'courseId' });
+
+Discussion.belongsTo(Assignments, { as: 'Assignment', foreignKey: 'assignmentId' });
+Assignments.hasMany(Discussion, { as: 'Discussions', foreignKey: 'assignmentId' });
+
+Discussion.hasMany(DiscussionReply, { foreignKey: 'discussionId' });
+DiscussionReply.belongsTo(Discussion, { foreignKey: 'discussionId' });
+
+DiscussionReply.belongsTo(Users, { foreignKey: 'userId' });
+Users.hasMany(DiscussionReply, { foreignKey: 'userId' });
+
+// Badge system
+Badge.hasMany(UserBadge, { foreignKey: 'badgeId' });
+UserBadge.belongsTo(Badge, { foreignKey: 'badgeId' });
+
+Users.hasMany(UserBadge, { foreignKey: 'userId' });
+UserBadge.belongsTo(Users, { foreignKey: 'userId' });

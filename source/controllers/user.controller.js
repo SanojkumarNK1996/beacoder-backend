@@ -5,6 +5,9 @@ const ContentBlocks = require("../models/ContentTable.model");
 const Subtopics = require("../models/Subtopics.model");
 const CourseTopics = require("../models/CourseTopics.model");
 const Assignments = require("../models/Assignment.model.js");
+const Notification = require("../models/Notification.model");
+const Badge = require("../models/Badge.model");
+const UserBadge = require("../models/UserBadge.model");
 
 const db = require("../config/db");
 const AssignmentSubmissions = require("../models/AssignmentSubmission.model.js");
@@ -94,7 +97,7 @@ const markContentCompleted = async (req, res) => {
                             include: [
                                 {
                                     model: Courses,
-                                    as: 'Course' 
+                                    as: 'Course'
                                 }
                             ]
                         }
@@ -152,9 +155,56 @@ const markContentCompleted = async (req, res) => {
         }, { transaction });
 
         // ====================================================================
+        // 🚀 NEW: 4.25️⃣ Check for Badge Milestones
+        // ====================================================================
+
+        const totalCompleted = await UserContentProgress.count({
+            where: { userId, isCompleted: true },
+            transaction
+        });
+
+        const milestone = Math.floor(totalCompleted / 5) * 5;
+        if (milestone > 0 && totalCompleted % 5 === 0) {
+            let badge = await Badge.findOne({ where: { milestone }, transaction });
+
+            if (!badge) {
+                badge = await Badge.create({
+                    name: `Level ${milestone} Achiever`,
+                    description: `Completed ${milestone} learning milestones`,
+                    milestone,
+                    icon: 'award'
+                }, { transaction });
+            }
+
+            const existingUserBadge = await UserBadge.findOne({
+                where: { userId, badgeId: badge.id },
+                transaction
+            });
+
+            if (!existingUserBadge) {
+                await UserBadge.create({
+                    userId,
+                    badgeId: badge.id,
+                    awardedAt: new Date()
+                }, { transaction });
+
+                await Notification.create({
+                    userId,
+                    message: `🎉 You earned the "${badge.name}" badge for completing ${milestone} learning milestones!`,
+                    module: 'badge',
+                    subModule: 'earned',
+                    iconType: 'award',
+                    metaData: { badgeId: badge.id },
+                    redirectTo: ``,
+                    isRead: false
+                }, { transaction });
+            }
+        }
+
+        // ====================================================================
         // 🚀 NEW: 4.5️⃣ Check if Subtopic is complete & Unlock Assignments
         // ====================================================================
-        
+
         // Count total content blocks in this specific subtopic
         const totalContentInSubtopic = await ContentBlocks.count({
             where: { subtopicId: subtopicId },
@@ -167,7 +217,7 @@ const markContentCompleted = async (req, res) => {
             include: [{
                 model: ContentBlocks,
                 where: { subtopicId: subtopicId },
-                required: true 
+                required: true
             }],
             transaction
         });
@@ -176,7 +226,7 @@ const markContentCompleted = async (req, res) => {
 
         // If they match, the subtopic is fully completed!
         if (totalContentInSubtopic > 0 && totalContentInSubtopic === completedContentInSubtopic) {
-            
+
             // Find any assignments linked to this subtopic
             const subtopicAssignments = await Assignments.findAll({
                 where: { subtopicId: subtopicId },
@@ -194,10 +244,26 @@ const markContentCompleted = async (req, res) => {
                 }));
 
                 // Unlock them for the user
-                await AssignmentSubmissions.bulkCreate(assignmentSubmissions, { 
+                await AssignmentSubmissions.bulkCreate(assignmentSubmissions, {
                     transaction,
                     ignoreDuplicates: true // Good practice in case of race conditions
                 });
+
+                // Create a notification per unlocked assignment
+                if (req.user && req.user.id) {
+                    const notifications = subtopicAssignments.map((assignment) => ({
+                        userId: req.user.id,
+                        message: `New assignment unlocked: ${assignment.title || 'Assignment'}`,
+                        module: 'assignment',
+                        subModule: 'unlock',
+                        iconType: 'info',
+                        metaData: { assignmentId: assignment.id },
+                        redirectTo: `/assignments`,
+                        isRead: false,
+                    }));
+
+                    await Notification.bulkCreate(notifications, { transaction });
+                }
 
                 assignmentUnlocked = true;
             }
@@ -257,7 +323,7 @@ const markContentCompleted = async (req, res) => {
             message: "Content marked completed",
             completionPercentage: percentage,
             // Send a flag to the frontend so it knows to show a notification!
-            newAssignmentUnlocked: assignmentUnlocked 
+            newAssignmentUnlocked: assignmentUnlocked
         });
 
     } catch (error) {
@@ -402,54 +468,138 @@ const markContentCompleted = async (req, res) => {
 
 const checkAndReleaseAssignments = async (userId, subtopicId) => {
 
-  // 1️⃣ Check if subtopic fully completed
-  const totalBlocks = await ContentBlocks.count({
-    where: { subtopicId }
-  });
-
-  const completedBlocks = await UserContentProgress.count({
-    where: { userId, isCompleted: true },
-    include: {
-      model: ContentBlocks,
-      where: { subtopicId }
-    }
-  });
-
-  if (totalBlocks !== completedBlocks) return;
-
-  // 2️⃣ Get assignments linked to this subtopic
-  const assignments = await Assignments.findAll({
-    where: { subtopicId, isActive: true }
-  });
-
-  for (const assignment of assignments) {
-
-    // 3️⃣ Prevent duplicate release
-    const existing = await UserAssignmentReleases.findOne({
-      where: { userId, assignmentId: assignment.id }
+    // 1️⃣ Check if subtopic fully completed
+    const totalBlocks = await ContentBlocks.count({
+        where: { subtopicId }
     });
 
-    if (!existing) {
+    const completedBlocks = await UserContentProgress.count({
+        where: { userId, isCompleted: true },
+        include: {
+            model: ContentBlocks,
+            where: { subtopicId }
+        }
+    });
 
-      await UserAssignmentReleases.create({
-        userId,
-        assignmentId: assignment.id
-      });
+    if (totalBlocks !== completedBlocks) return;
 
-      // 4️⃣ Create notification
-      await Notifications.create({
-        userId,
-        title: "New Assignment Unlocked 🎯",
-        message: `Assignment "${assignment.title}" is now available.`,
-        type: "assignment_release"
-      });
+    // ====================================================================
+    // 🚀 NEW: 4.25️⃣ Check for Badge Milestones
+    // ====================================================================
+
+    // Count total completed content for the user
+    const totalCompleted = await UserContentProgress.count({
+        where: { userId, isCompleted: true },
+        transaction
+    });
+
+    // Check for badge milestones (every 5 completions)
+    const milestone = Math.floor(totalCompleted / 5) * 5;
+    if (milestone > 0 && totalCompleted % 5 === 0) {
+        // Find or create the badge
+        let badge = await Badge.findOne({
+            where: { milestone },
+            transaction
+        });
+
+        if (!badge) {
+            badge = await Badge.create({
+                name: `Learning Milestone ${milestone}`,
+                description: `Completed ${milestone} learning milestones`,
+                milestone,
+                icon: 'star'
+            }, { transaction });
+        }
+
+        // Check if user already has this badge
+        const existingUserBadge = await UserBadge.findOne({
+            where: { userId, badgeId: badge.id },
+            transaction
+        });
+
+        if (!existingUserBadge) {
+            // Award the badge
+            await UserBadge.create({
+                userId,
+                badgeId: badge.id,
+                awardedAt: new Date()
+            }, { transaction });
+
+            // Create notification
+            await Notification.create({
+                userId,
+                message: `🎉 Congratulations! You've earned the "${badge.name}" badge for completing ${milestone} learning milestones.`,
+                module: 'badge',
+                subModule: 'earned',
+                iconType: 'award',
+                metaData: { badgeId: badge.id },
+                redirectTo: ``,
+                isRead: false
+            }, { transaction });
+        }
     }
-  }
+
+
+    // 2️⃣ Get assignments linked to this subtopic
+    const assignments = await Assignments.findAll({
+        where: { subtopicId, isActive: true }
+    });
+
+    for (const assignment of assignments) {
+
+        // 3️⃣ Prevent duplicate release
+        const existing = await UserAssignmentReleases.findOne({
+            where: { userId, assignmentId: assignment.id }
+        });
+
+        if (!existing) {
+
+            await UserAssignmentReleases.create({
+                userId,
+                assignmentId: assignment.id
+            });
+
+            // 4️⃣ Create notification
+            await Notification.create({
+                userId,
+                message: `Assignment "${assignment.title}" is now available.`,
+                module: "assignment",
+                subModule: "release",
+                iconType: "info",
+                metaData: { assignmentId: assignment.id },
+                redirectTo: `/assignments`,
+                isRead: false
+            });
+        }
+    }
+};
+
+const getUserBadges = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const userBadges = await UserBadge.findAll({
+            where: { userId },
+            include: [{
+                model: Badge,
+                attributes: ['id', 'name', 'description', 'milestone', 'icon']
+            }],
+            order: [['awardedAt', 'DESC']]
+        });
+
+        res.json({
+            success: true,
+            badges: userBadges
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 module.exports = {
     enrollInCourse,
     getUserCourses,
-    markContentCompleted
+    markContentCompleted,
+    getUserBadges
 }
 

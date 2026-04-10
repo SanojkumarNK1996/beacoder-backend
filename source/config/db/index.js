@@ -5,6 +5,13 @@ class PostgresConnector {
     this.PG_DB_URI = process.env.PG_DB_URI;
     this.pgConn = new Sequelize(this.PG_DB_URI, {
       logging: false,
+      pool: {
+        max: 5,
+        min: 0,
+        acquire: 20000,
+        idle: 5000,
+        evict: 1000,
+      },
       dialectOptions: {
         // ssl: {
         //   rejectUnauthorized: true,
@@ -17,20 +24,25 @@ class PostgresConnector {
     this.RETRY_TIMEOUT = 5 * 1000; // 5 seconds
   }
 
+  // handleConnectionError(error) {
+  //   if (this.POSTGRES_RETRY_COUNT < this.POSTGRES_RETRY_LIMIT) {
+  //     console.error('Postgres connection error:', error.message);
+  //     this.POSTGRES_RETRY_COUNT += 1;
+  //     setTimeout(() => {
+  //       console.log('Retrying Postgres connection...');
+  //       this.connect();
+  //     }, this.RETRY_TIMEOUT);
+  //   } else {
+  //     console.error('Postgres connection error:', error.message);
+  //     console.log('Retry Limit Exceeded. Terminating process...');
+  //     process.exit(1);
+  //   }
+  // }
+
   handleConnectionError(error) {
-    if (this.POSTGRES_RETRY_COUNT < this.POSTGRES_RETRY_LIMIT) {
-      console.error('Postgres connection error:', error.message);
-      this.POSTGRES_RETRY_COUNT += 1;
-      setTimeout(() => {
-        console.log('Retrying Postgres connection...');
-        this.connect();
-      }, this.RETRY_TIMEOUT);
-    } else {
-      console.error('Postgres connection error:', error.message);
-      console.log('Retry Limit Exceeded. Terminating process...');
-      process.exit(1);
-    }
-  }
+  console.error('Postgres connection error:', error.message);
+  process.exit(1);
+}
 
   async connect() {
     try {
@@ -43,7 +55,9 @@ class PostgresConnector {
 
   async syncDatabase() {
     try {
-      await this.pgConn.sync({ alter: true });
+      await this.pgConn.sync({ 
+        alter: true 
+       });
       console.log('✅ Database Synced');
     } catch (error) {
       console.error('❌ Database Synchronization Error:', error.message);

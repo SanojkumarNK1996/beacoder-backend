@@ -56,7 +56,7 @@ class PostgresConnector {
   async syncDatabase() {
     try {
       await this.pgConn.sync({ 
-        alter: true 
+        // alter: true 
        });
       console.log('✅ Database Synced');
     } catch (error) {

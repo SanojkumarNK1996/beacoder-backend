@@ -9,5 +9,6 @@ router.use('/courses', require("./course.routes"));
 router.use('/assignments', require("./assignment.routes"));
 router.use('/courses/:courseId', require("./quiz.routes"));
 router.use('/discussions', require('./discussion.routes'));
+router.use('/notes', require('./notes.routes'));
 
 module.exports = router

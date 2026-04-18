@@ -7,6 +7,7 @@ const ContentBlocks = require("./ContentTable.model");
 const Quiz = require("./Quiz.model");
 const QuizSubmission = require('./QuizSubmission.model');
 const UserContentProgress = require("./UserContentProgress.model");
+const UserNotes = require('./UserNotes.model');
 const Assignments = require('./Assignment.model');
 const AssignmentSubmissions = require('./AssignmentSubmission.model');
 const Notification = require('./Notification.model');
@@ -134,3 +135,13 @@ UserBadge.belongsTo(Badge, { foreignKey: 'badgeId' });
 
 Users.hasMany(UserBadge, { foreignKey: 'userId' });
 UserBadge.belongsTo(Users, { foreignKey: 'userId' });
+
+// UserNotes
+Users.hasMany(UserNotes, { foreignKey: 'userId' });
+UserNotes.belongsTo(Users, { foreignKey: 'userId' });
+
+CourseTopics.hasMany(UserNotes, { foreignKey: 'topicId' });
+UserNotes.belongsTo(CourseTopics, { foreignKey: 'topicId' });
+
+Subtopics.hasMany(UserNotes, { foreignKey: 'subtopicId' });
+UserNotes.belongsTo(Subtopics, { foreignKey: 'subtopicId' });

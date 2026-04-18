@@ -68,21 +68,34 @@ const getMyAssignments = async (req, res) => {
     const whereClause = { userId };
 
     if (status) {
-      whereClause.status = status;
+      if (status === 'submitted') {
+        whereClause.status = {
+          [Op.in]: ['submitted', 'accepted']
+        };
+      } else if (status === 'pending') {
+        whereClause.status = {
+          [Op.in]: ['pending', 'rejected']
+        };
+      } else {
+        whereClause.status = status;
+      }
     }
 
     const myAssignments = await AssignmentSubmissions.findAll({
       where: whereClause,
       include: [{
         model: Assignments,
+        required: false,
         include: [{
           model: Courses,
+          required: false,
           attributes: ['courseName'],
           as: 'Course'
         }]
       }],
       order: [['createdAt', 'DESC']]
     });
+
 
     res.json({
       success: true,

@@ -41,13 +41,19 @@ router.get("/", (req, res) => {
  *                   type: string
  *                 userName:
  *                   type: string
+ *                 showMentor:
+ *                   type: boolean
  *       500:
  *         description: Internal server error
  */
 router.get("/profile", requireAuth, async (req, res) => {
     try {
         const { name } = req.user
-        return res.status(200).json({ msg: "user fetched succesfully", userName: name })
+        return res.status(200).json({
+            msg: "user fetched succesfully",
+            userName: name,
+            showMentor: req.user.showMentor === true,
+        })
     } catch (error) {
         return res.status(500).json({ error: error.message })
     }
@@ -75,6 +81,10 @@ router.get("/profile", requireAuth, async (req, res) => {
  *                   type: array
  *                   items:
  *                     type: object
+ *                     properties:
+ *                       isActive:
+ *                         type: boolean
+ *                         description: Whether the enrolled course is currently available
  *       500:
  *         description: Internal server error
  */
@@ -82,69 +92,66 @@ router.get('/my-courses',requireAuth, userController.getUserCourses);
 
 /**
  * @swagger
- * /user/badges:
+ * /user/subtopics/{subtopicId}/review:
  *   get:
- *     summary: Get user's badges
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Badges fetched successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 badges:
- *                   type: array
- *                   items:
- *                     type: object
- *       500:
- *         description: Internal server error
- */
-router.get('/badges', requireAuth, userController.getUserBadges);
-
-/**
- * @swagger
- * /user/content/{contentBlockId}/complete:
- *   post:
- *     summary: Mark content block as completed
+ *     summary: Get the current user's subtopic review selection
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: contentBlockId
+ *         name: subtopicId
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
- *         description: Content marked as completed
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 completionPercentage:
- *                   type: number
- *                 newAssignmentUnlocked:
- *                   type: boolean
+ *         description: Current selection and course review coverage
  *       403:
  *         description: User not enrolled in course
  *       404:
- *         description: Content not found
+ *         description: Subtopic not found
  *       500:
  *         description: Internal server error
  */
-router.post('/content/:contentBlockId/complete',requireAuth,userController.markContentCompleted);
+router.get('/subtopics/:subtopicId/review', requireAuth, userController.getSubtopicReview);
+
+/**
+ * @swagger
+ * /user/subtopics/{subtopicId}/review:
+ *   post:
+ *     summary: Save the current user's subtopic review selection
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: subtopicId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [selection]
+ *             properties:
+ *               selection:
+ *                 type: string
+ *                 enum: [UNDERSTOOD, NEEDS_MORE, NOT_GOOD]
+ *     responses:
+ *       200:
+ *         description: Saved selection and updated course review coverage
+ *       400:
+ *         description: Invalid selection or subtopic ID
+ *       403:
+ *         description: User is not enrolled or subtopic is unavailable
+ *       404:
+ *         description: Subtopic not found
+ */
+router.post('/subtopics/:subtopicId/review', requireAuth, userController.saveSubtopicReview);
 
 /**
  * @swagger
@@ -174,6 +181,10 @@ router.post('/content/:contentBlockId/complete',requireAuth,userController.markC
  *                   type: object
  *       400:
  *         description: Already enrolled
+ *       403:
+ *         description: Course is inactive and cannot be enrolled in
+ *       404:
+ *         description: Course not found
  *       500:
  *         description: Internal server error
  */

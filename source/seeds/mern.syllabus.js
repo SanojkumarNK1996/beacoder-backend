@@ -162,7 +162,7 @@ function outer() {
     ----------------------------- */
     const course = await Courses.create(
       {
-        courseCode: 'MERN',
+        courseKey: 'mern',
         courseName: 'MERN Stack',
         description: 'Complete MERN Stack Development Course',
         difficultyLevel: 'medium',

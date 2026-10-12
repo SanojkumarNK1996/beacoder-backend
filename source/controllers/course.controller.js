@@ -5,15 +5,21 @@ const { Op } = require("sequelize");
 // Create a new course
 const createCourse = async (req, res) => {
     try {
-        const { courseCode, courseName, description, difficultyLevel, estimatedHours, imageUrl } = req.body;
+        const { courseKey, courseName, description, difficultyLevel, estimatedHours, imageUrl, displayOrder, isActive } = req.body;
+
+        if (isActive !== undefined && typeof isActive !== 'boolean') {
+            return res.status(400).json({ success: false, message: 'isActive must be a boolean' });
+        }
 
         const newCourse = await Courses.create({
-            courseCode,
+            courseKey,
             courseName,
             description,
             difficultyLevel,
             estimatedHours,
-            imageUrl
+            imageUrl,
+            displayOrder,
+            isActive: isActive === true
         });
 
         res.status(201).json({ success: true, data: newCourse });
@@ -26,6 +32,10 @@ const createCourse = async (req, res) => {
 const updateCourse = async (req, res) => {
     try {
         const { courseId } = req.params;
+
+        if (req.body.isActive !== undefined && typeof req.body.isActive !== 'boolean') {
+            return res.status(400).json({ success: false, message: 'isActive must be a boolean' });
+        }
 
         const [updated] = await Courses.update(req.body, {
             where: { id: courseId },
@@ -72,17 +82,16 @@ const getAllCourses = async (req, res) => {
 
     const enrolledCourseIds = enrolledCourses.map(e => e.courseId);
 
-    // 2️⃣ Fetch all active courses excluding enrolled ones
+    // Return all courses the user is not enrolled in; clients can lock inactive ones.
     const courses = await Courses.findAll({
       where: {
-        isActive: true,
         id: {
           [Op.notIn]: enrolledCourseIds.length > 0
             ? enrolledCourseIds
             : [0] // fallback to avoid empty array issue
         }
       },
-      order: [["createdAt", "DESC"]]
+    order: [["displayOrder", "ASC"], ["id", "ASC"]]
     });
 
     res.json({ success: true, data: courses });

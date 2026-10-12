@@ -4,7 +4,8 @@ const courseController = require('../controllers/course.controller');
 const topicController = require("../controllers/topic.controller")
 const subTopicController = require("../controllers/subtopics.controller")
 const contentBlockController = require("../controllers/contentBlock.controller");
-const { requireAuth } = require("../middleware/authorize")
+const { requireAuth, authorizeAnyRole } = require("../middleware/authorize")
+const contentEditorAccess = [requireAuth, authorizeAnyRole("admin", "instructor")];
 
 //courses ------------
 /**
@@ -63,7 +64,22 @@ router.patch('/:courseId', courseController.updateCourse);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Courses fetched successfully
+ *         description: All non-enrolled courses, including inactive courses for locked-course display
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       isActive:
+ *                         type: boolean
+ *                         description: False when the course is unavailable for enrollment
  *       500:
  *         description: Internal server error
  */
@@ -83,7 +99,7 @@ router.get('/', requireAuth, courseController.getAllCourses);
  *           type: string
  *     responses:
  *       200:
- *         description: Course fetched successfully
+ *         description: Course fetched successfully, including its isActive state
  *       500:
  *         description: Internal server error
  */
@@ -486,7 +502,11 @@ router.delete('/:courseId/topics/:topicId/subtopics/:subtopicId', subTopicContro
  *       500:
  *         description: Internal server error
  */
-router.post("/:courseId/topics/:topicId/subtopics/:subtopicId/contents", contentBlockController.createContentBlock);
+router.post(
+  "/:courseId/topics/:topicId/subtopics/:subtopicId/contents",
+  ...contentEditorAccess,
+  contentBlockController.createContentBlock
+);
 
 /**
  * @swagger
@@ -559,7 +579,11 @@ router.get("/:courseId/topics/:topicId/subtopics/:subtopicId/contents", contentB
  *       500:
  *         description: Internal server error
  */
-router.patch("/:courseId/topics/:topicId/subtopics/:subtopicId/contents/:contentId", contentBlockController.updateContentBlock);
+router.patch(
+  "/:courseId/topics/:topicId/subtopics/:subtopicId/contents/:contentId",
+  ...contentEditorAccess,
+  contentBlockController.updateContentBlock
+);
 
 /**
  * @swagger
@@ -594,6 +618,10 @@ router.patch("/:courseId/topics/:topicId/subtopics/:subtopicId/contents/:content
  *       500:
  *         description: Internal server error
  */
-router.delete("/:courseId/topics/:topicId/subtopics/:subtopicId/contents/:contentId", contentBlockController.deleteContentBlock);
+router.delete(
+  "/:courseId/topics/:topicId/subtopics/:subtopicId/contents/:contentId",
+  ...contentEditorAccess,
+  contentBlockController.deleteContentBlock
+);
 
 module.exports = router;

@@ -12,9 +12,6 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 
 
-// Seed Imports
-const Badge = require('./models/Badge.model');
-const seedBadges = require('./seeds/badges.seed');
 const swaggerSpec = require('./swagger');
 
 const app = express();
@@ -23,7 +20,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan('dev'));
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 
 app.use(cors({
   origin: '*',
@@ -35,23 +32,6 @@ app.use(cors({
 app.use('/api/v1/', require('./routes'));
 const PORT = process.env.PORT || 3000;
 
-const autoSeedBadges = async () => {
-  try {
-    const badgeCount = await Badge.count();
-
-    if (badgeCount === 0) {
-      console.log('🏆 No badges found. Seeding badge master data...');
-      await seedBadges();
-      console.log('✅ Badge master data seeded successfully!');
-    } else {
-      console.log(`🏆 ${badgeCount} badges already exist. Skipping seed.`);
-    }
-  } catch (error) {
-    console.error('❌ Error during badge seeding:', error);
-    throw error; // propagate to startup failure
-  }
-};
-
 const startServer = async () => {
   try {
     console.log('🔌 Connecting to Postgres...');
@@ -59,9 +39,6 @@ const startServer = async () => {
 
     console.log('🧱 Syncing database...');
     await db.syncDatabase();     // ✅ alter:true runs here
-
-    console.log('🌱 Running seed checks...');
-    await autoSeedBadges();      // ✅ seed only after sync
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);

@@ -28,9 +28,14 @@ const Users = db.pgConn.define('Users', {
     unique: true,
   },
   role: {
-    type: DataTypes.ENUM('student', 'instructor', 'admin'),
+    type: DataTypes.ENUM('student', 'instructor', 'partner', 'admin'),
     allowNull: false,
     defaultValue: 'student',
+  },
+  tag: {
+    type: DataTypes.ENUM('CUSTOMER', 'COMPANY'),
+    allowNull: false,
+    defaultValue: 'COMPANY',
   },
   password: {
     type: DataTypes.STRING,
@@ -40,11 +45,24 @@ const Users = db.pgConn.define('Users', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  showMentor: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   lastLogin: {
     type: DataTypes.DATE,
   },
+  accessStartsAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  accessExpiresAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
   paymentStatus: {
-  type: DataTypes.ENUM('pending', 'paid', 'failed', 'refunded', 'expired'),
+  type: DataTypes.ENUM('pending', 'paid', 'premium', 'failed', 'refunded', 'expired'),
   allowNull: false,
   defaultValue: 'pending',
 },

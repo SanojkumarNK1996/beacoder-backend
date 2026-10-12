@@ -7,9 +7,12 @@ const CourseTopics = db.pgConn.define('CourseTopics', {
     primaryKey: true,
     autoIncrement: true,
   },
+  topicKey: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   title: {
     type: DataTypes.STRING,
-    unique: true,
     allowNull: false,
   },
   description: {
@@ -30,7 +33,7 @@ const CourseTopics = db.pgConn.define('CourseTopics', {
   indexes: [
     {
       unique: true,
-      fields: ['title', 'courseId'], // composite unique constraint
+      fields: ['topicKey', 'courseId'], // composite unique constraint
     },
   ],
 });

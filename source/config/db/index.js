@@ -1,5 +1,4 @@
 const { Sequelize } = require('sequelize');
-const fs = require("fs")
 class PostgresConnector {
   constructor() {
     this.PG_DB_URI = process.env.PG_DB_URI;
@@ -56,8 +55,16 @@ class PostgresConnector {
   async syncDatabase() {
     try {
       await this.pgConn.sync({ 
-        // alter: true 
+        alter: true,
        });
+      await this.pgConn.query(`
+        SELECT setval(
+          pg_get_serial_sequence('public."Assignments"', 'id'),
+          COALESCE(MAX(id), 1),
+          MAX(id) IS NOT NULL
+        )
+        FROM public."Assignments";
+      `);
       console.log('✅ Database Synced');
     } catch (error) {
       console.error('❌ Database Synchronization Error:', error.message);
@@ -65,6 +72,7 @@ class PostgresConnector {
       process.exit(1);
     }
   }
+
 }
 
 const db = new PostgresConnector();

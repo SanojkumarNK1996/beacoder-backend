@@ -74,7 +74,7 @@ const getStudentDiscussions = async (req, res) => {
       where: whereClause,
       include: [
         { model: Users, as: 'User', attributes: ['id', 'name', 'email'] },
-        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseCode'] },
+        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseKey'] },
         { model: Assignments, as: 'Assignment' },
         { model: DiscussionReply, include: [{ model: Users, as: 'User', attributes: ['id', 'name', 'email'] }] }
       ],
@@ -105,7 +105,7 @@ const getStudentDiscussionById = async (req, res) => {
       where: { id: discussionId },
       include: [
         { model: Users, as: 'User', attributes: ['id', 'name', 'email'] },
-        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseCode'] },
+        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseKey'] },
         { model: Assignments, as: 'Assignment' },
         { model: DiscussionReply, include: [{ model: Users, as: 'User', attributes: ['id', 'name', 'email'] }] }
       ]
@@ -228,7 +228,7 @@ const getAdminDiscussions = async (req, res) => {
       where: whereClause,
       include: [
         { model: Users, as: 'User', attributes: ['id', 'name', 'email'] },
-        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseCode'] },
+        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseKey'] },
         { model: Assignments, as: 'Assignment' },
         { model: DiscussionReply, include: [{ model: Users, as: 'User', attributes: ['id', 'name', 'email'] }] }
       ],
@@ -276,7 +276,7 @@ const getAdminPairProgrammingDiscussions = async (req, res) => {
       where: whereClause,
       include: [
         { model: Users, as: 'User', attributes: ['id', 'name', 'email', 'phone'] },
-        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseCode'] },
+        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseKey'] },
         { model: Assignments, as: 'Assignment' },
         { model: DiscussionReply, include: [{ model: Users, as: 'User', attributes: ['id', 'name', 'email'] }] }
       ],
@@ -323,7 +323,7 @@ const getAdminDiscussionById = async (req, res) => {
       where: { id: discussionId },
       include: [
         { model: Users, as: 'User', attributes: ['id', 'name', 'email'] },
-        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseCode'] },
+        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseKey'] },
         { model: Assignments, as: 'Assignment' },
         { model: DiscussionReply, include: [{ model: Users, as: 'User', attributes: ['id', 'name', 'email'] }] }
       ]
@@ -411,7 +411,7 @@ const updatePairProgrammingRequest = async (req, res) => {
     const response = await Discussions.findByPk(discussionId, {
       include: [
         { model: Users, as: 'User', attributes: ['id', 'name', 'email'] },
-        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseCode'] },
+        { model: Courses, as: 'Course', attributes: ['id', 'courseName', 'courseKey'] },
         { model: Assignments, as: 'Assignment' }
       ]
     });

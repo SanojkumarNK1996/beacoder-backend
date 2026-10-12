@@ -7,6 +7,10 @@ const Subtopics = db.pgConn.define('Subtopics', {
     primaryKey: true,
     autoIncrement: true,
   },
+  subtopicKey: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -26,7 +30,7 @@ const Subtopics = db.pgConn.define('Subtopics', {
   indexes: [
     {
       unique: true,
-      fields: ['title', 'topicId'], // composite unique constraint
+      fields: ['subtopicKey'],
     },
   ],
 });

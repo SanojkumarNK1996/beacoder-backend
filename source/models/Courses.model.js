@@ -7,7 +7,7 @@ const Courses = db.pgConn.define('Courses', {
     primaryKey: true,
     autoIncrement: true,
   },
-  courseCode: {
+  courseKey: {
     type: DataTypes.STRING,
     unique: true,
     allowNull: false,
@@ -15,6 +15,14 @@ const Courses = db.pgConn.define('Courses', {
   courseName: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  displayOrder: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+  },
+  stream: {
+    type: DataTypes.STRING,
   },
   description: {
     type: DataTypes.TEXT,
@@ -31,7 +39,8 @@ const Courses = db.pgConn.define('Courses', {
   },
   isActive: {
     type: DataTypes.BOOLEAN,
-    defaultValue: true,
+    allowNull: false,
+    defaultValue: false,
   },
 }, { timestamps: true });
 

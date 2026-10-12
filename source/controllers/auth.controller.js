@@ -6,7 +6,7 @@ const Users = require("../models/Users.model")
 
 const SignUp = async (req, res) => {
     try {
-        const { name, email, phone, password, role, address, officeCollege } = req.body;
+        const { name, email, phone, password, address, officeCollege } = req.body;
 
         const existingUser = await Users.findOne({ where: { email } });
         if (existingUser) {
@@ -27,7 +27,8 @@ const SignUp = async (req, res) => {
             password: hashedPassword,
             address,
             officeCollege,
-            role
+            role: "student",
+            tag: 'CUSTOMER',
         });
 
         return res.status(201).json({ msg: 'User registered successfully', user });
@@ -54,6 +55,22 @@ const Login = async (req, res) => {
 
         if (!user.isActive) {
             return res.status(400).json({ msg: 'user account not activated.contact admin' });
+        }
+
+        const now = Date.now();
+        if (user.accessStartsAt && new Date(user.accessStartsAt).getTime() > now) {
+            return res.status(403).json({
+                code: "ACCESS_NOT_STARTED",
+                msg: "Platform access has not started yet. Please contact an administrator.",
+                accessStartsAt: user.accessStartsAt,
+            });
+        }
+        if (user.accessExpiresAt && new Date(user.accessExpiresAt).getTime() <= now) {
+            return res.status(403).json({
+                code: "ACCESS_EXPIRED",
+                msg: "Platform access has expired. Please contact an administrator.",
+                accessExpiresAt: user.accessExpiresAt,
+            });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);

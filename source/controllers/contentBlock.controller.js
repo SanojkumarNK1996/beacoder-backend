@@ -1,7 +1,6 @@
 const ContentBlocks = require("../models/ContentTable.model");
-const Quiz = require("../models/Quiz.model");
 const Subtopics = require("../models/Subtopics.model");
-const sanitizeHtml = require("sanitize-html");
+const sanitizeLessonHtml = require("../utils/sanitizeLessonHtml");
 
 // ✅ Create Content Block
 const createContentBlock = async (req, res) => {
@@ -43,27 +42,8 @@ const createContentBlock = async (req, res) => {
 
                 // Sanitize the HTML description to avoid XSS and strip unwanted tags/attributes.
                 // Allowed tags include headings, paragraphs, lists, pre/code for code blocks, links, basic formatting.
-                data.description = sanitizeHtml(data.description, {
-                    allowedTags: [
-                        "h1", "h2", "h3", "h4", "h5", "h6",
-                        "p", "ul", "ol", "li", "br",
-                        "pre", "code", "strong", "em", "b", "i", "u",
-                        "a", "span", "div"
-                    ],
-                    allowedAttributes: {
-                        a: ["href", "name", "target", "rel"],
-                        // allow classes on code/span if you use styling classes client-side
-                        "*": ["class"]
-                    },
-                    allowedSchemes: ["http", "https", "mailto"],
-                    // preserve whitespace inside <pre><code>
-                    nonTextTags: ["style", "script", "textarea", "noscript"]
-                });
+                data.description = sanitizeLessonHtml(data.description);
             }
-            if (dataType === "mcq_set" && (!data.questions || !Array.isArray(data.questions))) {
-                return res.status(400).json({ message: "questions array is required for mcq_set type." });
-            }
-
             const createdBlock = await ContentBlocks.create({
                 displayOrder,
                 dataType,
@@ -98,25 +78,9 @@ const getContentBlocksBySubtopic = async (req, res) => {
             return res.status(404).json({ message: "Subtopic not found." });
         }
 
-        // const contentBlocks = await ContentBlocks.findAll({
-        //     where: { subtopicId },
-        //     order: [["displayOrder", "ASC"]],
-        // });
-
         const contentBlocks = await ContentBlocks.findAll({
             where: { subtopicId },
-            include: [
-                {
-                    model: Quiz,
-                    where: { isActive: true },
-                    required: false,              // keeps content blocks even if no quiz exists
-                    attributes: ['id', 'title', 'type', 'questionData'],
-                },
-            ],
-            order: [
-                ['displayOrder', 'ASC'],
-                [Quiz, 'displayOrder', 'ASC'],
-            ],
+            order: [["displayOrder", "ASC"]],
         });
 
         return res.status(200).json({
@@ -179,25 +143,8 @@ const updateContentBlock = async (req, res) => {
             }
 
             // Sanitize incoming HTML description
-            data.description = sanitizeHtml(data.description, {
-                allowedTags: [
-                    "h1", "h2", "h3", "h4", "h5", "h6",
-                    "p", "ul", "ol", "li", "br",
-                    "pre", "code", "strong", "em", "b", "i", "u",
-                    "a", "span", "div"
-                ],
-                allowedAttributes: {
-                    a: ["href", "name", "target", "rel"],
-                    "*": ["class"]
-                },
-                allowedSchemes: ["http", "https", "mailto"],
-                nonTextTags: ["style", "script", "textarea", "noscript"]
-            });
+            data.description = sanitizeLessonHtml(data.description);
         }
-        if (dataType === "mcq_set" && data && (!data.questions || !Array.isArray(data.questions))) {
-            return res.status(400).json({ message: "questions array is required for mcq_set type." });
-        }
-
         await block.update({
             displayOrder: displayOrder !== undefined ? displayOrder : block.displayOrder,
             dataType: dataType || block.dataType,

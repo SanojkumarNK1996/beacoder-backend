@@ -1,29 +1,64 @@
 const Users = require("./Users.model");
+const MentorProfile = require("./MentorProfile.model");
 const Courses = require("./Courses.model");
 const CourseEnrollments = require("./CourseEnrollments.model");
 const CourseTopics = require("./CourseTopics.model");    // Topics Table
 const Subtopics = require("./Subtopics.model");
 const ContentBlocks = require("./ContentTable.model");
-const Quiz = require("./Quiz.model");
-const QuizSubmission = require('./QuizSubmission.model');
-const UserContentProgress = require("./UserContentProgress.model");
-const UserNotes = require('./UserNotes.model');
+const UserSubtopicReview = require("./UserSubtopicReview.model");
 const Assignments = require('./Assignment.model');
-const AssignmentSubmissions = require('./AssignmentSubmission.model');
+const UserAssignments = require('./UserAssignments.model');
 const Notification = require('./Notification.model');
-const Badge = require('./Badge.model');
-const UserBadge = require('./UserBadge.model');
 const Discussion = require('./Discussion.model');
+const CareerRoadmapCourses = require('./CareerRoadmapCourses.model');
+const Recruiter = require('./Recruiter.model');
+const QuizQuestions = require('./QuizQuestion.model');
+const StudentProgress = require('./StudentProgress.model');
+const StudentActivity = require('./StudentActivity.model');
+const Tests = require('./Tests.model');
+const UserTestResults = require('./UserTestResults.model');
 
 
 Users.hasMany(Courses, { foreignKey: "instructorId" });
 Courses.belongsTo(Users, { as: "Instructor", foreignKey: "instructorId" });
 
+Users.hasOne(MentorProfile, {
+  as: "mentorProfile",
+  foreignKey: { name: "userId", allowNull: false, unique: true },
+  onDelete: "CASCADE",
+});
+MentorProfile.belongsTo(Users, {
+  as: "user",
+  foreignKey: { name: "userId", allowNull: false, unique: true },
+});
+
+Users.hasMany(Recruiter, { as: "recruiters", foreignKey: "createdBy", onDelete: "CASCADE" });
+Recruiter.belongsTo(Users, { as: "creator", foreignKey: "createdBy" });
+
 Users.hasMany(CourseEnrollments, { foreignKey: "userId" });
 CourseEnrollments.belongsTo(Users, { foreignKey: "userId" });
 
+Users.hasOne(StudentProgress, { as: 'studentProgress', foreignKey: 'studentId', onDelete: 'CASCADE' });
+StudentProgress.belongsTo(Users, { as: 'student', foreignKey: 'studentId' });
+
+Users.hasMany(StudentActivity, { as: 'studentActivities', foreignKey: 'studentId', onDelete: 'CASCADE' });
+StudentActivity.belongsTo(Users, { as: 'student', foreignKey: 'studentId' });
+Users.hasMany(StudentActivity, { as: 'recordedStudentActivities', foreignKey: 'recordedById' });
+StudentActivity.belongsTo(Users, { as: 'recorder', foreignKey: 'recordedById' });
+
+Users.hasMany(Tests, { as: 'createdTests', foreignKey: 'createdBy' });
+Tests.belongsTo(Users, { as: 'creator', foreignKey: 'createdBy' });
+Tests.hasMany(UserTestResults, { as: 'userResults', foreignKey: 'testId' });
+UserTestResults.belongsTo(Tests, { as: 'test', foreignKey: 'testId' });
+Users.hasMany(UserTestResults, { as: 'testResults', foreignKey: 'userId' });
+UserTestResults.belongsTo(Users, { as: 'user', foreignKey: 'userId' });
+UserTestResults.belongsTo(Users, { as: 'assignedBy', foreignKey: 'assignedById' });
+
 Courses.hasMany(CourseEnrollments, { foreignKey: "courseId" });
 CourseEnrollments.belongsTo(Courses, { foreignKey: "courseId" });
+
+Courses.hasMany(CareerRoadmapCourses, { foreignKey: 'courseId', onDelete: 'CASCADE' });
+CareerRoadmapCourses.belongsTo(Courses, { as: 'Course', foreignKey: 'courseId', onDelete: 'CASCADE' });
 
 Courses.hasMany(CourseTopics, {
   as: 'Topics',
@@ -42,70 +77,43 @@ Subtopics.belongsTo(CourseTopics, { foreignKey: 'topicId' });
 Subtopics.hasMany(ContentBlocks, { foreignKey: "subtopicId", onDelete: "CASCADE" });
 ContentBlocks.belongsTo(Subtopics, { foreignKey: "subtopicId" });
 
-//quiz
-Courses.hasMany(Quiz, { foreignKey: 'courseId' });
-Quiz.belongsTo(Courses, { foreignKey: 'courseId' });
-
-CourseTopics.hasMany(Quiz, {
-  foreignKey: 'topicId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+QuizQuestions.belongsTo(Subtopics, {
+  as: 'Subtopic',
+  foreignKey: 'subtopicKey',
+  targetKey: 'subtopicKey',
 });
-Quiz.belongsTo(CourseTopics, {
-  foreignKey: 'topicId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+Subtopics.hasMany(QuizQuestions, {
+  as: 'QuizQuestions',
+  foreignKey: 'subtopicKey',
+  sourceKey: 'subtopicKey',
 });
 
-// ✅ content-level quizzes
-ContentBlocks.hasMany(Quiz, {
-  foreignKey: 'contentBlockId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+// One review selection per user and subtopic.
+Users.hasMany(UserSubtopicReview, { foreignKey: 'userId', onDelete: 'CASCADE' });
+UserSubtopicReview.belongsTo(Users, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Subtopics.hasMany(UserSubtopicReview, { foreignKey: 'subtopicId', onDelete: 'CASCADE' });
+UserSubtopicReview.belongsTo(Subtopics, { foreignKey: 'subtopicId', onDelete: 'CASCADE' });
+
+// Assignment curriculum link: one stable, database-enforced subtopic key.
+Assignments.belongsTo(Subtopics, {
+  as: 'Subtopic',
+  foreignKey: 'subtopicKey',
+  targetKey: 'subtopicKey',
 });
-Quiz.belongsTo(ContentBlocks, {
-  foreignKey: 'contentBlockId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+Subtopics.hasMany(Assignments, {
+  as: 'Assignments',
+  foreignKey: 'subtopicKey',
+  sourceKey: 'subtopicKey',
 });
-// Subtopics.hasMany(Quiz, { foreignKey: 'subtopicId' });
-// Quiz.belongsTo(Subtopics, { foreignKey: 'subtopicId' });
 
-// Courses.hasMany(Assignments, { foreignKey: 'courseId' });
-// Assignments.belongsTo(Courses, { foreignKey: 'courseId' });
+// User assignments
+UserAssignments.belongsTo(Assignments, { as: 'Assignment', foreignKey: 'assignmentId' });
+Assignments.hasMany(UserAssignments, { as: 'UserAssignments', foreignKey: 'assignmentId' });
 
-// QuizSubmission
-Users.hasMany(QuizSubmission, { foreignKey: 'userId' });
-QuizSubmission.belongsTo(Users, { foreignKey: 'userId' });
+UserAssignments.belongsTo(Users, { as: 'User', foreignKey: 'userId' });
+Users.hasMany(UserAssignments, { as: 'UserAssignments', foreignKey: 'userId' });
 
-Quiz.hasMany(QuizSubmission, { foreignKey: 'quizId' });
-QuizSubmission.belongsTo(Quiz, { foreignKey: 'quizId' });
-
-// user progress
-ContentBlocks.hasMany(UserContentProgress, { foreignKey: 'contentBlockId' });
-UserContentProgress.belongsTo(ContentBlocks, { foreignKey: 'contentBlockId' });
-
-Users.hasMany(UserContentProgress, { foreignKey: 'userId' });
-UserContentProgress.belongsTo(Users, { foreignKey: 'userId' });
-
-// Assignment
-Assignments.belongsTo(Courses, { foreignKey: 'courseId' });
-Courses.hasMany(Assignments, { foreignKey: 'courseId' });
-
-// Optional Topic
-Assignments.belongsTo(CourseTopics, { foreignKey: 'topicId' });
-CourseTopics.hasMany(Assignments, { foreignKey: 'topicId' });
-
-// Optional Subtopic
-Assignments.belongsTo(Subtopics, { foreignKey: 'subtopicId' });
-Subtopics.hasMany(Assignments, { foreignKey: 'subtopicId' });
-
-// Submissions
-AssignmentSubmissions.belongsTo(Assignments, { foreignKey: 'assignmentId' });
-Assignments.hasMany(AssignmentSubmissions, { foreignKey: 'assignmentId' });
-
-AssignmentSubmissions.belongsTo(Users, { foreignKey: 'userId' });
-Users.hasMany(AssignmentSubmissions, { foreignKey: 'userId' });
+UserAssignments.belongsTo(Users, { as: 'AssignedBy', foreignKey: 'assignedById' });
 
 // Notification
 Notification.belongsTo(Users, { foreignKey: 'userId' });
@@ -128,20 +136,3 @@ DiscussionReply.belongsTo(Discussion, { foreignKey: 'discussionId' });
 
 DiscussionReply.belongsTo(Users, { foreignKey: 'userId' });
 Users.hasMany(DiscussionReply, { foreignKey: 'userId' });
-
-// Badge system
-Badge.hasMany(UserBadge, { foreignKey: 'badgeId' });
-UserBadge.belongsTo(Badge, { foreignKey: 'badgeId' });
-
-Users.hasMany(UserBadge, { foreignKey: 'userId' });
-UserBadge.belongsTo(Users, { foreignKey: 'userId' });
-
-// UserNotes
-Users.hasMany(UserNotes, { foreignKey: 'userId' });
-UserNotes.belongsTo(Users, { foreignKey: 'userId' });
-
-CourseTopics.hasMany(UserNotes, { foreignKey: 'topicId' });
-UserNotes.belongsTo(CourseTopics, { foreignKey: 'topicId' });
-
-Subtopics.hasMany(UserNotes, { foreignKey: 'subtopicId' });
-UserNotes.belongsTo(Subtopics, { foreignKey: 'subtopicId' });

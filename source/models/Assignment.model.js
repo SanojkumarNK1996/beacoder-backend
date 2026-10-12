@@ -7,30 +7,31 @@ const Assignments = db.pgConn.define('Assignments', {
     primaryKey: true,
     autoIncrement: true,
   },
+  assignmentKey: {
+    type: DataTypes.STRING(320),
+    allowNull: false,
+    unique: true,
+  },
 
   title: {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  difficulty: {
+    type: DataTypes.ENUM('easy', 'medium', 'tough'),
+    allowNull: false,
+  },
   description: {
-    type: DataTypes.JSONB, // Stores  text, lists, etc.
+    type: DataTypes.JSONB, // Stores task text and optional context/expected output.
     allowNull: false,
   },
-  allowedSubmissionType: {
-    type: DataTypes.ENUM('TEXT', 'URL'),
+  subtopicKey: {
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'URL'
+    references: { model: 'Subtopics', key: 'subtopicKey' },
+    onUpdate: 'RESTRICT',
+    onDelete: 'RESTRICT',
   },
-  maxMarks: {
-    type: DataTypes.INTEGER,
-    defaultValue: 100,
-  },
-
-  dueDate: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
-
   displayOrder: {
     type: DataTypes.INTEGER,
     defaultValue: 1,
@@ -44,15 +45,7 @@ const Assignments = db.pgConn.define('Assignments', {
 }, {
   timestamps: true,
   indexes: [
-    {
-      fields: ['courseId']
-    },
-    {
-      fields: ['topicId']
-    },
-    {
-      fields: ['subtopicId']
-    }
+    { fields: ['subtopicKey'] },
   ]
 });
 

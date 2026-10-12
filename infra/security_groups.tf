@@ -72,14 +72,3 @@ resource "aws_security_group_rule" "rds_from_ec2" {
   source_security_group_id = aws_security_group.ec2_sg.id
   description              = "Allow Postgres from EC2"
 }
-
-# We need this to comment
-resource "aws_security_group_rule" "rds_public" {
-  type              = "ingress"
-  from_port         = 5432
-  to_port           = 5432
-  protocol          = "tcp"
-  security_group_id = aws_security_group.rds_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-  description       = "Allow Postgres from anywhere (unsafe!)"
-}

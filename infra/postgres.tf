@@ -10,7 +10,7 @@ resource "aws_db_instance" "postgres" {
   skip_final_snapshot       = true
   final_snapshot_identifier = "beacoder-db-final-${formatdate("YYYYMMDDhhmmss", timestamp())}"
   vpc_security_group_ids    = [aws_security_group.rds_sg.id]
-  publicly_accessible       = false
+  publicly_accessible       = true
   db_subnet_group_name      = aws_db_subnet_group.main.name
 }
 

@@ -72,3 +72,14 @@ resource "aws_security_group_rule" "rds_from_ec2" {
   source_security_group_id = aws_security_group.ec2_sg.id
   description              = "Allow Postgres from EC2"
 }
+
+# Temporary local pgAdmin/data-import access; keep this limited to your current public IP.
+resource "aws_security_group_rule" "rds_from_local" {
+  type              = "ingress"
+  from_port         = 5432
+  to_port           = 5432
+  protocol          = "tcp"
+  security_group_id = aws_security_group.rds_sg.id
+  cidr_blocks       = [var.postgres_client_cidr]
+  description       = "Temporary PostgreSQL access from local workstation"
+}

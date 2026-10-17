@@ -1,22 +1,25 @@
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
 }
 
-# Subnet in AZ ap-south-1a
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+# Use the first two available AZs in the configured AWS region.
 resource "aws_subnet" "subnet_1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "ap-south-1a"
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 }
 
-# Subnet in AZ ap-south-1b
 resource "aws_subnet" "subnet_2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "ap-south-1b"
+  availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = true
 }
 

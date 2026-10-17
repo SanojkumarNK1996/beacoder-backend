@@ -62,6 +62,17 @@ resource "aws_api_gateway_integration" "root_integration" {
 resource "aws_api_gateway_deployment" "app_deploy" {
   rest_api_id = aws_api_gateway_rest_api.app_api.id
 
+  triggers = {
+    redeployment = sha1(jsonencode({
+      proxy_uri = aws_api_gateway_integration.proxy_integration.uri
+      root_uri  = aws_api_gateway_integration.root_integration.uri
+    }))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
   depends_on = [
     aws_api_gateway_integration.proxy_integration,
     aws_api_gateway_integration.root_integration

@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "The AWS region where resources will be deployed."
   type        = string
-  default     = "ap-south-1"
+  default     = "us-east-1"
 }
 
 variable "apg_stage_name" {
@@ -16,5 +16,10 @@ variable "github_repo" {
 
 variable "environment" {
   description = "Deployment environment identifier (e.g., dev, staging, prod)."
+  type        = string
+}
+
+variable "postgres_client_cidr" {
+  description = "Public IPv4 CIDR allowed to connect to PostgreSQL, e.g. 203.0.113.10/32."
   type        = string
 }

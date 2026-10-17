@@ -7,6 +7,11 @@ const ContentBlocks = db.pgConn.define("ContentBlocks", {
         autoIncrement: true,
         primaryKey: true,
     },
+    contentKey: {
+        type: DataTypes.STRING(200),
+        allowNull: true,
+        unique: true,
+    },
     displayOrder: {
         type: DataTypes.INTEGER,
         allowNull: false,

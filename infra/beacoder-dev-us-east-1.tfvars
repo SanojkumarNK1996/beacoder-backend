@@ -1,0 +1,5 @@
+aws_region           = "us-east-1"
+github_repo          = "https://github.com/SanojkumarNK1996/beacoder-backend.git"
+environment          = "dev"
+apg_stage_name       = "dev"
+postgres_client_cidr = "49.47.195.248/32"

@@ -29,6 +29,7 @@ resource "aws_instance" "app" {
 
   user_data = <<-EOF
     #!/bin/bash
+    set -eo pipefail
     
     echo "=== User Data Script Started at $(date) ==="
     
@@ -38,12 +39,13 @@ resource "aws_instance" "app" {
     echo "Step 2: Installing Git... <-->"
     dnf install -y git
     
-    echo "Step 3: Installing Node.js (v20 LTS)... <-->"
-    dnf install -y nodejs20 npm
-    sleep 2
+    echo "Step 3: Installing Node.js 22... <--->"
+    curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
+    dnf install -y nodejs
     
     node --version || echo "Node installation failed"
     npm --version || echo "NPM installation failed"
+    node -e 'const [major, minor] = process.versions.node.split(".").map(Number); if (major < 22 || (major === 22 && minor < 12)) process.exit(1)' || { echo "Node.js 22.12 or newer is required"; exit 1; }
     
     echo "Step 4: Installing PostgreSQL client... <-->"
     dnf install -y postgresql15
@@ -68,7 +70,7 @@ resource "aws_instance" "app" {
     ls -lah
     
     echo "Step 6: Installing npm packages... <-->"
-    sudo -u ec2-user npm install
+    sudo -u ec2-user npm ci
     
     echo "Step 7: Waiting for database at ${aws_db_instance.postgres.address}..."
     for i in {1..60}; do
@@ -102,9 +104,24 @@ resource "aws_instance" "app" {
     sudo -u ec2-user pm2 start app.js --name beacoder-backend
     
     sudo -u ec2-user pm2 save
-    sudo -u ec2-user pm2 startup systemd -u ec2-user --hp /home/ec2-user
+    pm2 startup systemd -u ec2-user --hp /home/ec2-user
     
     sudo -u ec2-user pm2 status
+
+    echo "Waiting for application to listen on port 3000..."
+    for i in {1..60}; do
+      if ss -tln | grep -q ':3000'; then
+        echo "Application is listening on port 3000"
+        break
+      fi
+      sleep 2
+    done
+
+    if ! ss -tln | grep -q ':3000'; then
+      echo "Application failed to listen on port 3000; PM2 logs follow:"
+      sudo -u ec2-user pm2 logs beacoder-backend --lines 100 --nostream || true
+      exit 1
+    fi
     
     echo "=== Setup Complete at $(date) ==="
     echo "<--> PM2 Status:"
